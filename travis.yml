@@ -1,0 +1,33 @@
+language: scala
+scala:
+  - 2.12.8
+jdk:
+  - openjdk8
+  - openjdk11
+
+dist: trusty
+sudo: false
+
+addons:
+  apt:
+    update: true
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot
+
+before_install:
+  - unset _JAVA_OPTIONS
+  - export JAVA_OPTS="$JAVA_OPTS -Xms512m -Xmx2048m"
+
+before_cache:
+  # Tricks to avoid unnecessary cache updates
+  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
+  - find $HOME/.sbt -name "*.lock" -delete
+
+script:
+  - sbt ++$TRAVIS_SCALA_VERSION clean scalafmtCheck test:scalafmtCheck compile test coverage coverageReport
+
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
