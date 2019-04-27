@@ -5,9 +5,7 @@ import endpoints.algebra.BasicAuthentication.Credentials
 import endpoints.algebra.Documentation
 import io.scalaland.endpoints.elm.ast.RequiredHeader
 
-trait BasicAuthentication
-  extends algebra.BasicAuthentication
-    with Endpoints {
+trait BasicAuthentication extends algebra.BasicAuthentication with Endpoints {
 
   def basicAuthenticationHeader: RequestHeaders[Credentials] =
     List(RequiredHeader("Authentication"))

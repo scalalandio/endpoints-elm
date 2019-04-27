@@ -26,14 +26,10 @@ object AppliedType {
 
 case class ReferencedType(name: String) extends ElmType
 
-case class TypeAlias(name: String,
-                     fields: Seq[(String, ElmType)]) extends ElmType
+case class TypeAlias(name: String, fields: Seq[(String, ElmType)]) extends ElmType
 
-case class UnionType(name: String,
-                     constructors: Seq[(String, TypeAlias)],
-                     discriminator: Option[String] = None) extends ElmType
-
-
+case class UnionType(name: String, constructors: Seq[(String, TypeAlias)], discriminator: Option[String] = None)
+    extends ElmType
 
 object ElmType {
 
@@ -44,9 +40,9 @@ object ElmType {
       appliedType.args.flatMap(referencesDeep)
     case _: ReferencedType =>
       Nil
-    case ta@TypeAlias(_, fields) =>
+    case ta @ TypeAlias(_, fields) =>
       ta +: fields.flatMap { case (_, tpe) => referencesDeep(tpe) }
-    case ut@UnionType(_, constructors, _) =>
+    case ut @ UnionType(_, constructors, _) =>
       ut +: constructors.flatMap { case (_, tpe) => referencesDeep(tpe) }
   }
 

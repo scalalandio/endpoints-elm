@@ -41,24 +41,18 @@ object TypeEmit {
   def typeDefinition(elmType: ElmType): String = elmType match {
     case TypeAlias(name, fields) =>
       s"type alias $name = " + fields
-        .map { case (nme, tpe) =>
-          s"$nme : ${typeReference(tpe)}"
+        .map {
+          case (nme, tpe) =>
+            s"$nme : ${typeReference(tpe)}"
         }
-        .mkString(
-          "\n  { ",
-          "\n  , ",
-          "\n  }"
-        )
+        .mkString("\n  { ", "\n  , ", "\n  }")
     case UnionType(name, constructors, _) =>
       constructors
-        .map { case (nme, param) =>
-          s"${unionConstructorName(name, nme)} ${typeReference(param)}"
+        .map {
+          case (nme, param) =>
+            s"${unionConstructorName(name, nme)} ${typeReference(param)}"
         }
-        .mkString(
-          s"type $name\n  = ",
-          "\n  | ",
-          ""
-        )
+        .mkString(s"type $name\n  = ", "\n  | ", "")
     case other =>
       typeReference(other)
   }
@@ -68,39 +62,38 @@ object TypeEmit {
     case appliedType: AppliedType =>
       val refStr = s"${appliedType.name} ${appliedType.args.map(typeReference(_, topLevel = false)).mkString(" ")}"
       if (topLevel) refStr else s"($refStr)"
-    case ReferencedType(name) => name
-    case TypeAlias(name, _) => name
+    case ReferencedType(name)  => name
+    case TypeAlias(name, _)    => name
     case UnionType(name, _, _) => name
   }
 
   def initDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
-    case basicType: BasicType => basicType match {
-      case BasicType.Unit => "()"
-      case BasicType.String => "\"\""
-      case BasicType.Int => "0"
-      case BasicType.Float => "0.0"
-      case BasicType.Bool => "False"
-      case BasicType.Uuid => "Tuple.first <| step Uuid.uuidGenerator (initialSeed 0)"
-      case BasicType.DateTime => "DateTime.init"
-      case BasicType.DateOnly => "DateOnly.init"
-      case BasicType.TimeOnly => "TimeOnly.init"
-    }
-    case appliedType: AppliedType => appliedType match {
-      case AppliedType.Maybe(_) => "Nothing"
-      case AppliedType.List(_) => "[]"
-      case AppliedType.Dict(_) => "Dict.empty"
-    }
+    case basicType: BasicType =>
+      basicType match {
+        case BasicType.Unit     => "()"
+        case BasicType.String   => "\"\""
+        case BasicType.Int      => "0"
+        case BasicType.Float    => "0.0"
+        case BasicType.Bool     => "False"
+        case BasicType.Uuid     => "Tuple.first <| step Uuid.uuidGenerator (initialSeed 0)"
+        case BasicType.DateTime => "DateTime.init"
+        case BasicType.DateOnly => "DateOnly.init"
+        case BasicType.TimeOnly => "TimeOnly.init"
+      }
+    case appliedType: AppliedType =>
+      appliedType match {
+        case AppliedType.Maybe(_) => "Nothing"
+        case AppliedType.List(_)  => "[]"
+        case AppliedType.Dict(_)  => "Dict.empty"
+      }
     case ReferencedType(name) => s"Data.$name.init"
     case TypeAlias(_, fields) if topLevel =>
       fields
-        .map { case (name, tpe) =>
-          s"$name = ${initDefinition(tpe, topLevel = false)}"
+        .map {
+          case (name, tpe) =>
+            s"$name = ${initDefinition(tpe, topLevel = false)}"
         }
-        .mkString(
-          "\n  { ",
-          "\n  , ",
-          "\n  }"
-        )
+        .mkString("\n  { ", "\n  , ", "\n  }")
     case TypeAlias(name, _) =>
       initDefinition(ReferencedType(name))
     case UnionType(name, constructors, _) =>
@@ -109,40 +102,38 @@ object TypeEmit {
   }
 
   def encoderDefinition(elmType: ElmType, arg: String, topLevel: Boolean = true): String = elmType match {
-    case basicType: BasicType => basicType match {
-      case BasicType.Unit => "Encode.object []"
-      case BasicType.String => s"Encode.string $arg"
-      case BasicType.Int => s"Encode.int $arg"
-      case BasicType.Float => s"Encode.float $arg"
-      case BasicType.Bool => s"Encode.bool $arg"
-      case BasicType.Uuid => s"Uuid.encode $arg"
-      case BasicType.DateTime => s"DateTime.encoder $arg"
-      case BasicType.DateOnly => s"DateOnly.encoder $arg"
-      case BasicType.TimeOnly => s"TimeOnly.encoder $arg"
-    }
-    case appliedType: AppliedType => appliedType match {
-      case AppliedType.Maybe(tpe) =>
-        s"Maybe.withDefault Encode.null (Maybe.map ${encoderDefinition(tpe, "", topLevel = false)} $arg)"
-      case AppliedType.List(tpe) =>
-        val tpeEncoder = encoderDefinition(tpe, "", topLevel = false)
-        s"(Encode.list $tpeEncoder) $arg"
-      case AppliedType.Dict(tpe) =>
-        val tpeEncoder = encoderDefinition(tpe, "", topLevel = false)
-        s"(Encode.dict identity ($tpeEncoder) $arg)"
-    }
+    case basicType: BasicType =>
+      basicType match {
+        case BasicType.Unit     => "Encode.object []"
+        case BasicType.String   => s"Encode.string $arg"
+        case BasicType.Int      => s"Encode.int $arg"
+        case BasicType.Float    => s"Encode.float $arg"
+        case BasicType.Bool     => s"Encode.bool $arg"
+        case BasicType.Uuid     => s"Uuid.encode $arg"
+        case BasicType.DateTime => s"DateTime.encoder $arg"
+        case BasicType.DateOnly => s"DateOnly.encoder $arg"
+        case BasicType.TimeOnly => s"TimeOnly.encoder $arg"
+      }
+    case appliedType: AppliedType =>
+      appliedType match {
+        case AppliedType.Maybe(tpe) =>
+          s"Maybe.withDefault Encode.null (Maybe.map ${encoderDefinition(tpe, "", topLevel = false)} $arg)"
+        case AppliedType.List(tpe) =>
+          val tpeEncoder = encoderDefinition(tpe, "", topLevel = false)
+          s"(Encode.list $tpeEncoder) $arg"
+        case AppliedType.Dict(tpe) =>
+          val tpeEncoder = encoderDefinition(tpe, "", topLevel = false)
+          s"(Encode.dict identity ($tpeEncoder) $arg)"
+      }
     case ReferencedType(name) =>
       s"Data.$name.encoder $arg"
     case TypeAlias(name, fields) if topLevel =>
-
       val fieldsEncoder = fields
-        .map { case (nme, tpe) =>
-          s"""( "$nme", ${encoderDefinition(tpe, s"$arg.$nme", topLevel = false)} )"""
+        .map {
+          case (nme, tpe) =>
+            s"""( "$nme", ${encoderDefinition(tpe, s"$arg.$nme", topLevel = false)} )"""
         }
-        .mkString(
-          "\n  [ ",
-          "\n  , ",
-          "\n  ]"
-        )
+        .mkString("\n  [ ", "\n  , ", "\n  ]")
 
       List(
         s"Encode.object (fieldsEncoder $arg)",
@@ -159,35 +150,34 @@ object TypeEmit {
 
     case UnionType(name, constructors, discriminator) if topLevel =>
       constructors
-        .flatMap { case (nme, tpe) =>
-          Seq(
-            s"  ${unionConstructorName(name, nme)} ${nme.toLowerCase} ->",
-            s"""    Data.${tpe.name}.encoderTagged ("${discriminator.getOrElse("type")}", "$nme" ) ${nme.toLowerCase}""",
-            ""
-          )
+        .flatMap {
+          case (nme, tpe) =>
+            Seq(
+              s"  ${unionConstructorName(name, nme)} ${nme.toLowerCase} ->",
+              s"""    Data.${tpe.name}.encoderTagged ("${discriminator
+                .getOrElse("type")}", "$nme" ) ${nme.toLowerCase}""",
+              ""
+            )
         }
-        .mkString(
-          s"case $arg of\n",
-          "\n",
-          ""
-        )
+        .mkString(s"case $arg of\n", "\n", "")
 
     case UnionType(name, _, _) =>
       encoderDefinition(ReferencedType(name), arg)
   }
 
   def decoderDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
-    case basicType: BasicType => basicType match {
-      case BasicType.Unit => "Decode.succeed ()"
-      case BasicType.String => "Decode.string"
-      case BasicType.Int => "Decode.int"
-      case BasicType.Float => "Decode.float"
-      case BasicType.Bool => "Decode.bool"
-      case BasicType.Uuid => "Uuid.decoder"
-      case BasicType.DateTime => "DateTime.decoder"
-      case BasicType.DateOnly => "DateOnly.decoder"
-      case BasicType.TimeOnly => "TimeOnly.decoder"
-    }
+    case basicType: BasicType =>
+      basicType match {
+        case BasicType.Unit     => "Decode.succeed ()"
+        case BasicType.String   => "Decode.string"
+        case BasicType.Int      => "Decode.int"
+        case BasicType.Float    => "Decode.float"
+        case BasicType.Bool     => "Decode.bool"
+        case BasicType.Uuid     => "Uuid.decoder"
+        case BasicType.DateTime => "DateTime.decoder"
+        case BasicType.DateOnly => "DateOnly.decoder"
+        case BasicType.TimeOnly => "TimeOnly.decoder"
+      }
     case appliedType: AppliedType =>
       val decoder = appliedType match {
         case AppliedType.Maybe(tpe) =>
@@ -208,24 +198,22 @@ object TypeEmit {
           case (nme, tpe) =>
             s"""|> required "$nme" ${decoderDefinition(tpe, topLevel = false)} """
         }
-        .mkString(
-          s"Decode.succeed $name\n  ",
-          "\n  ",
-          ""
-        )
+        .mkString(s"Decode.succeed $name\n  ", "\n  ", "")
 
     case TypeAlias(name, _) =>
       decoderDefinition(ReferencedType(name))
 
     case UnionType(name, constructors, discriminator) if topLevel =>
-
-      val cases = constructors.flatMap { case (nme, param) =>
-        Seq(
-          s"""  "$nme" ->""",
-          s"    Decode.map ${unionConstructorName(name, nme)} ${decoderDefinition(param, topLevel = false)}",
-          ""
-        )
-      }.mkString("\n")
+      val cases = constructors
+        .flatMap {
+          case (nme, param) =>
+            Seq(
+              s"""  "$nme" ->""",
+              s"    Decode.map ${unionConstructorName(name, nme)} ${decoderDefinition(param, topLevel = false)}",
+              ""
+            )
+        }
+        .mkString("\n")
 
       Seq(
         s"""Decode.field "${discriminator.getOrElse("type")}" Decode.string""",
@@ -243,13 +231,14 @@ object TypeEmit {
   }
 
   def imports(elmType: ElmType, topLevel: Boolean = true): Seq[String] = elmType match {
-    case basicType: BasicType => basicType match {
-      case BasicType.Uuid => Seq("Uuid", "Random")
-      case BasicType.DateTime => Seq("Date", "DateTime")
-      case BasicType.DateOnly => Seq("Date", "DateOnly")
-      case BasicType.TimeOnly => Seq("Date", "TimeOnly")
-      case _ => Nil
-    }
+    case basicType: BasicType =>
+      basicType match {
+        case BasicType.Uuid     => Seq("Uuid", "Random")
+        case BasicType.DateTime => Seq("Date", "DateTime")
+        case BasicType.DateOnly => Seq("Date", "DateOnly")
+        case BasicType.TimeOnly => Seq("Date", "TimeOnly")
+        case _                  => Nil
+      }
     case appliedType: AppliedType =>
       val dict = if (appliedType.isInstanceOf[Dict]) Seq("Dict") else Nil
       dict ++ appliedType.args.flatMap(imports(_, topLevel = false))
@@ -259,17 +248,17 @@ object TypeEmit {
       Seq(importModuleName(ta))
     case TypeAlias(_, fields) =>
       fields.flatMap { case (_, tpe) => imports(tpe, topLevel = false) }
-    case ut@UnionType(_, constructors, _) if !topLevel =>
+    case ut @ UnionType(_, constructors, _) if !topLevel =>
       importModuleName(ut) +: imports(constructors.head._2, topLevel = false)
     case UnionType(_, constructors, _) =>
       constructors.flatMap { case (_, param) => imports(param, topLevel = false) }
   }
 
   def importModuleName(elmType: ElmType): String = elmType match {
-    case basicType: BasicType => basicType.name
-    case _: AppliedType => ""
-    case ReferencedType(name) => s"Data.$name"
-    case TypeAlias(name, _) => s"Data.$name"
+    case basicType: BasicType  => basicType.name
+    case _: AppliedType        => ""
+    case ReferencedType(name)  => s"Data.$name"
+    case TypeAlias(name, _)    => s"Data.$name"
     case UnionType(name, _, _) => s"Data.$name"
   }
 
@@ -278,15 +267,16 @@ object TypeEmit {
 
   def recordSetters(elmType: ElmType): List[String] = elmType match {
     case TypeAlias(_, fields) =>
-      fields.toList.flatMap { case (fieldName, fieldTpe) =>
-        val tpeRef = typeReference(elmType)
-        val fieldTypeRef = typeReference(fieldTpe)
-        val argName = NameUtils.identFromTypeName(elmType)
-        List(
-          s"set${NameUtils.camelizeName(fieldName)} : $fieldTypeRef -> $tpeRef -> $tpeRef",
-          s"set${NameUtils.camelizeName(fieldName)} new${NameUtils.camelizeName(fieldName)} $argName =",
-          s"  { $argName | $fieldName = new${NameUtils.camelizeName(fieldName)} }"
-        )
+      fields.toList.flatMap {
+        case (fieldName, fieldTpe) =>
+          val tpeRef = typeReference(elmType)
+          val fieldTypeRef = typeReference(fieldTpe)
+          val argName = NameUtils.identFromTypeName(elmType)
+          List(
+            s"set${NameUtils.camelizeName(fieldName)} : $fieldTypeRef -> $tpeRef -> $tpeRef",
+            s"set${NameUtils.camelizeName(fieldName)} new${NameUtils.camelizeName(fieldName)} $argName =",
+            s"  { $argName | $fieldName = new${NameUtils.camelizeName(fieldName)} }"
+          )
       }
     case _ =>
       Nil
@@ -294,15 +284,16 @@ object TypeEmit {
 
   def recordUpdaters(elmType: ElmType): List[String] = elmType match {
     case TypeAlias(_, fields) =>
-      fields.toList.flatMap { case (fieldName, fieldTpe) =>
-        val tpeRef = typeReference(elmType)
-        val fieldTypeRef = typeReference(fieldTpe)
-        val argName = NameUtils.identFromTypeName(elmType)
-        List(
-          s"update${NameUtils.camelizeName(fieldName)} : ($fieldTypeRef -> $fieldTypeRef) -> $tpeRef -> $tpeRef",
-          s"update${NameUtils.camelizeName(fieldName)} f $argName =",
-          s"  { $argName | $fieldName = f $argName.$fieldName }"
-        )
+      fields.toList.flatMap {
+        case (fieldName, fieldTpe) =>
+          val tpeRef = typeReference(elmType)
+          val fieldTypeRef = typeReference(fieldTpe)
+          val argName = NameUtils.identFromTypeName(elmType)
+          List(
+            s"update${NameUtils.camelizeName(fieldName)} : ($fieldTypeRef -> $fieldTypeRef) -> $tpeRef -> $tpeRef",
+            s"update${NameUtils.camelizeName(fieldName)} f $argName =",
+            s"  { $argName | $fieldName = f $argName.$fieldName }"
+          )
       }
     case _ =>
       Nil

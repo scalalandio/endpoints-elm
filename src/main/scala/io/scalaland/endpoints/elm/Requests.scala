@@ -17,8 +17,9 @@ trait Requests extends algebra.Requests with Urls with Methods {
     List(OptionalHeader(name))
 
   implicit def reqHeadersSemigroupal: Semigroupal[RequestHeaders] = new Semigroupal[RequestHeaders] {
-    def product[A, B](fa: RequestHeaders[A], fb: RequestHeaders[B])
-                     (implicit tupler: Tupler[A, B]): RequestHeaders[tupler.Out] = fa ++ fb
+    def product[A, B](fa: RequestHeaders[A], fb: RequestHeaders[B])(
+      implicit tupler: Tupler[A, B]
+    ): RequestHeaders[tupler.Out] = fa ++ fb
   }
 
   implicit def reqHeadersInvFunctor: InvariantFunctor[RequestHeaders] = new InvariantFunctor[RequestHeaders] {
@@ -28,7 +29,9 @@ trait Requests extends algebra.Requests with Urls with Methods {
   type RequestEntity[A] = (ElmEntityEncoding, ElmType)
 
   implicit def reqEntityInvFunctor: InvariantFunctor[RequestEntity] = new InvariantFunctor[RequestEntity] {
-    def xmap[From, To](f: (ElmEntityEncoding, ElmType), map: From => To, contramap: To => From): (ElmEntityEncoding, ElmType) = f
+    def xmap[From, To](f: (ElmEntityEncoding, ElmType),
+                       map: From => To,
+                       contramap: To => From): (ElmEntityEncoding, ElmType) = f
   }
 
   def emptyRequest: RequestEntity[Unit] = (NoEntity, BasicType.Unit)

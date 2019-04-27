@@ -6,22 +6,19 @@ import io.scalaland.endpoints.elm.ast._
 import scala.language.higherKinds
 import scala.collection.compat.Factory
 
-
 trait JsonSchemas extends algebra.JsonSchemas {
   type JsonSchema[A] = ElmType
   type Record[A] = TypeAlias
   type Tagged[A] = UnionType
   type Enum[A] = UnionType
 
-  def enumeration[A](values: Seq[A])
-                    (encode: A => String)
-                    (implicit tpe: JsonSchema[String]): UnionType =
+  def enumeration[A](values: Seq[A])(encode: A => String)(implicit tpe: JsonSchema[String]): UnionType =
     UnionType("", values.map(v => encode(v) -> TypeAlias("", Nil)))
 
   def named[A, S[T] <: JsonSchema[T]](schema: S[A], name: String): S[A] = schema match {
     case ta: TypeAlias => ta.copy(name = name).asInstanceOf[S[A]]
     case ut: UnionType => ut.copy(name = name).asInstanceOf[S[A]]
-    case other => other
+    case other         => other
   }
 
   def lazySchema[A](schema: => JsonSchema[A], name: String): JsonSchema[A] =
@@ -29,12 +26,10 @@ trait JsonSchemas extends algebra.JsonSchemas {
 
   def emptyRecord: TypeAlias = TypeAlias("", Seq.empty)
 
-  def field[A](name: String, documentation: Option[String])
-              (implicit tpe: ElmType): TypeAlias =
+  def field[A](name: String, documentation: Option[String])(implicit tpe: ElmType): TypeAlias =
     TypeAlias("", Seq(name -> tpe))
 
-  def optField[A](name: String, documentation: Option[String])
-                 (implicit tpe: ElmType): TypeAlias =
+  def optField[A](name: String, documentation: Option[String])(implicit tpe: ElmType): TypeAlias =
     TypeAlias("", Seq(name -> AppliedType.Maybe(tpe)))
 
   def taggedRecord[A](recordA: TypeAlias, tag: String): UnionType =

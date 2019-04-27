@@ -10,7 +10,6 @@ case class ElmEndpoint(name: String,
                        description: Option[String],
                        tags: List[String])
 
-
 case class ElmRequest(method: String,
                       url: ElmUrl,
                       encoding: ElmEntityEncoding,
@@ -19,15 +18,14 @@ case class ElmRequest(method: String,
 
   def name: String = {
     val urlSegments = url.segments.collect {
-      case StaticSegment(n) => n
+      case StaticSegment(n)      => n
       case VariableSegment(n, _) => n
     }
     NameUtils.identNameFromSegments(urlSegments :+ method)
   }
 }
 
-case class ElmUrl(segments: List[ElmUrlSegment],
-                  queryParams: List[(String, ElmType)])
+case class ElmUrl(segments: List[ElmUrlSegment], queryParams: List[(String, ElmType)])
 
 sealed trait ElmUrlSegment
 case class StaticSegment(segment: String) extends ElmUrlSegment
