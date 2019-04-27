@@ -6,6 +6,20 @@ organization := "io.scalaland"
 
 scalaVersion := "2.12.8"
 
+val versions = new {
+  val endpoints = "0.9.0"
+  val utest = "0.6.7"
+}
+
+libraryDependencies ++= Seq(
+  "org.julienrf" %% "endpoints-algebra" % versions.endpoints % "provided",
+  "org.julienrf" %% "endpoints-algebra-json-schema" % versions.endpoints % "provided",
+  "org.julienrf" %% "endpoints-json-schema-generic" % versions.endpoints % "provided",
+  "com.lihaoyi" %% "utest" % versions.utest % "test"
+)
+
+testFrameworks += new TestFramework("utest.runner.Framework")
+
 scalacOptions ++= Seq(
   "-target:jvm-1.8",
   "-encoding", "UTF-8",
@@ -42,20 +56,6 @@ scalacOptions ++= Seq(
 )
 
 scalacOptions in(Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
-
-
-val versions = new {
-  val endpoints = "0.9.0"
-  val utest = "0.6.7"
-}
-
-libraryDependencies ++= Seq(
-  "org.julienrf" %% "endpoints-algebra" % versions.endpoints % "provided",
-  "org.julienrf" %% "endpoints-algebra-json-schema" % versions.endpoints % "provided",
-  "com.lihaoyi" %% "utest" % versions.utest % "test"
-)
-
-testFrameworks += new TestFramework("utest.runner.Framework")
 
 homepage := Some(url("https://github.com/scalalandio"))
 
