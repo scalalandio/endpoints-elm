@@ -41,16 +41,21 @@ scalacOptions ++= Seq(
   "-Xlint:unsound-match"
 )
 
-scalacOptions in (Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
+scalacOptions in(Compile, console) --= Seq("-Ywarn-unused:imports", "-Xfatal-warnings")
 
 
-val endpointsVersion = "0.9.0"
+val versions = new {
+  val endpoints = "0.9.0"
+  val utest = "0.6.7"
+}
 
 libraryDependencies ++= Seq(
-  "org.julienrf" %% "endpoints-algebra" % endpointsVersion % "provided",
-  "org.julienrf" %% "endpoints-algebra-json-schema" % endpointsVersion % "provided",
+  "org.julienrf" %% "endpoints-algebra" % versions.endpoints % "provided",
+  "org.julienrf" %% "endpoints-algebra-json-schema" % versions.endpoints % "provided",
+  "com.lihaoyi" %% "utest" % versions.utest % "test"
 )
 
+testFrameworks += new TestFramework("utest.runner.Framework")
 
 homepage := Some(url("https://github.com/scalalandio"))
 
