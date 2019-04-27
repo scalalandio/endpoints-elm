@@ -67,15 +67,13 @@ object TypeEmit {
   def initDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
     case basicType: BasicType =>
       basicType match {
+        case CustomBasicType(name) => s"$name.init"
         case BasicType.Unit     => "()"
         case BasicType.String   => "\"\""
         case BasicType.Int      => "0"
         case BasicType.Float    => "0.0"
         case BasicType.Bool     => "False"
         case BasicType.Uuid     => "Tuple.first <| step Uuid.uuidGenerator (initialSeed 0)"
-        case BasicType.DateTime => "DateTime.init"
-        case BasicType.DateOnly => "DateOnly.init"
-        case BasicType.TimeOnly => "TimeOnly.init"
       }
     case appliedType: AppliedType =>
       appliedType match {
@@ -101,15 +99,13 @@ object TypeEmit {
   def encoderDefinition(elmType: ElmType, arg: String, topLevel: Boolean = true): String = elmType match {
     case basicType: BasicType =>
       basicType match {
+        case CustomBasicType(name) => s"$name.encoder $arg"
         case BasicType.Unit     => "Encode.object []"
         case BasicType.String   => s"Encode.string $arg"
         case BasicType.Int      => s"Encode.int $arg"
         case BasicType.Float    => s"Encode.float $arg"
         case BasicType.Bool     => s"Encode.bool $arg"
         case BasicType.Uuid     => s"Uuid.encode $arg"
-        case BasicType.DateTime => s"DateTime.encoder $arg"
-        case BasicType.DateOnly => s"DateOnly.encoder $arg"
-        case BasicType.TimeOnly => s"TimeOnly.encoder $arg"
       }
     case appliedType: AppliedType =>
       appliedType match {
@@ -165,15 +161,13 @@ object TypeEmit {
   def decoderDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
     case basicType: BasicType =>
       basicType match {
+        case CustomBasicType(name) => s"$name.decoder"
         case BasicType.Unit     => "Decode.succeed ()"
         case BasicType.String   => "Decode.string"
         case BasicType.Int      => "Decode.int"
         case BasicType.Float    => "Decode.float"
         case BasicType.Bool     => "Decode.bool"
         case BasicType.Uuid     => "Uuid.decoder"
-        case BasicType.DateTime => "DateTime.decoder"
-        case BasicType.DateOnly => "DateOnly.decoder"
-        case BasicType.TimeOnly => "TimeOnly.decoder"
       }
     case appliedType: AppliedType =>
       val decoder = appliedType match {
@@ -230,10 +224,8 @@ object TypeEmit {
   def imports(elmType: ElmType, topLevel: Boolean = true): Seq[String] = elmType match {
     case basicType: BasicType =>
       basicType match {
+        case CustomBasicType(name) => Seq(name)
         case BasicType.Uuid     => Seq("Uuid", "Random")
-        case BasicType.DateTime => Seq("Date", "DateTime")
-        case BasicType.DateOnly => Seq("Date", "DateOnly")
-        case BasicType.TimeOnly => Seq("Date", "TimeOnly")
         case _                  => Nil
       }
     case appliedType: AppliedType =>

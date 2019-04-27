@@ -4,6 +4,8 @@ sealed trait ElmType { def name: String }
 
 sealed abstract class BasicType(val name: String) extends ElmType
 
+case class CustomBasicType(override val name: String) extends BasicType(name)
+
 object BasicType {
   object Unit extends BasicType("()")
   object String extends BasicType("String")
@@ -11,9 +13,6 @@ object BasicType {
   object Float extends BasicType("Float")
   object Bool extends BasicType("Bool")
   object Uuid extends BasicType("Uuid")
-  object DateTime extends BasicType("DateTime")
-  object DateOnly extends BasicType("DateOnly")
-  object TimeOnly extends BasicType("TimeOnly")
 }
 
 sealed abstract class AppliedType(val name: String, val args: Seq[ElmType]) extends ElmType
