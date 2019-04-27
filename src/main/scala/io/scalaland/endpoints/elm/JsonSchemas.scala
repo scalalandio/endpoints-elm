@@ -1,7 +1,7 @@
 package io.scalaland.endpoints.elm
 
 import endpoints.algebra
-import io.scalaland.endpoints.elm.ast._
+import io.scalaland.endpoints.elm.model._
 
 import scala.language.higherKinds
 import scala.collection.compat.Factory

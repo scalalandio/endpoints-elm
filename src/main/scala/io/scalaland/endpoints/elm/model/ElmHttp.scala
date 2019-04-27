@@ -1,4 +1,4 @@
-package io.scalaland.endpoints.elm.ast
+package io.scalaland.endpoints.elm.model
 
 import io.scalaland.endpoints.elm.emit.NameUtils
 

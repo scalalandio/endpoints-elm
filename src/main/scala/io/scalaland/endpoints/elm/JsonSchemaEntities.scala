@@ -2,7 +2,7 @@ package io.scalaland.endpoints.elm
 
 import endpoints.algebra
 import endpoints.algebra.Documentation
-import io.scalaland.endpoints.elm.ast._
+import io.scalaland.endpoints.elm.model._
 
 trait JsonSchemaEntities extends algebra.JsonSchemaEntities with Endpoints with JsonSchemas {
 

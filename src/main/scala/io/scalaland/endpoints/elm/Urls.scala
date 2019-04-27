@@ -2,7 +2,7 @@ package io.scalaland.endpoints.elm
 
 import endpoints.algebra.Documentation
 import endpoints.{InvariantFunctor, Tupler, algebra}
-import io.scalaland.endpoints.elm.ast._
+import io.scalaland.endpoints.elm.model._
 import scala.collection.compat.Factory
 
 import language.higherKinds

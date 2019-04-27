@@ -2,7 +2,7 @@ package io.scalaland.endpoints.elm
 
 import endpoints.algebra.Documentation
 import endpoints.{InvariantFunctor, Semigroupal, Tupler, algebra}
-import io.scalaland.endpoints.elm.ast._
+import io.scalaland.endpoints.elm.model._
 
 trait Requests extends algebra.Requests with Urls with Methods {
 

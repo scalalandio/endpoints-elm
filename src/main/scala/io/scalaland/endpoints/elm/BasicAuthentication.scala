@@ -3,7 +3,7 @@ package io.scalaland.endpoints.elm
 import endpoints.algebra
 import endpoints.algebra.BasicAuthentication.Credentials
 import endpoints.algebra.Documentation
-import io.scalaland.endpoints.elm.ast.RequiredHeader
+import io.scalaland.endpoints.elm.model.RequiredHeader
 
 trait BasicAuthentication extends algebra.BasicAuthentication with Endpoints {
 

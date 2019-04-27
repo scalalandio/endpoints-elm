@@ -1,7 +1,7 @@
 package io.scalaland.endpoints.elm.emit
 
-import io.scalaland.endpoints.elm.ast.AppliedType.Dict
-import io.scalaland.endpoints.elm.ast._
+import io.scalaland.endpoints.elm.model.AppliedType.Dict
+import io.scalaland.endpoints.elm.model._
 
 object TypeEmit {
 

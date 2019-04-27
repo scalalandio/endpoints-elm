@@ -1,4 +1,4 @@
-package io.scalaland.endpoints.elm.ast
+package io.scalaland.endpoints.elm.model
 
 sealed trait ElmType { def name: String }
 
