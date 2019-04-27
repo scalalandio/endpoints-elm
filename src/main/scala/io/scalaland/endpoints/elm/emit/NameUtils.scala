@@ -16,4 +16,8 @@ object NameUtils {
   def camelizeName(name: String): String = {
     name.split("[-\\./]").map(_.capitalize).mkString
   }
+
+  def tagToModuleName(tag: String): String = {
+    tag.split("[/\\s+]").map(_.capitalize).mkString
+  }
 }

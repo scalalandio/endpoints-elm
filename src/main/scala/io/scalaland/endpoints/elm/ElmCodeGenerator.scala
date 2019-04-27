@@ -57,7 +57,7 @@ trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchema
       .mapValues(_.map(_._2))
       .map {
         case (tag, moduleEndpoints) =>
-          ElmHttpModule(NameUtils.camelizeName(tag), moduleEndpoints)
+          ElmHttpModule(NameUtils.tagToModuleName(tag), moduleEndpoints)
       }
       .toSeq
   }
