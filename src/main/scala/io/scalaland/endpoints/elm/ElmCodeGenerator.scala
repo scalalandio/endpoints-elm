@@ -9,7 +9,7 @@ trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchema
 
   def writeElmCode(targetDirectory: String, clean: Boolean = true)(
     endpoints: ElmEndpoint*
-  )(httpApiUrlPrefix: String = "", withCredentials: Boolean = false, additionalContents: Seq[(File, String)]): Unit = {
+  )(httpApiUrlPrefix: String = "", withCredentials: Boolean = false, additionalContents: Seq[(File, String)] = Seq.empty): Unit = {
 
     if (clean) {
       FileUtils.cleanDirectory(new File(targetDirectory))
