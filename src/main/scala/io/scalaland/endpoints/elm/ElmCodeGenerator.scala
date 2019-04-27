@@ -2,7 +2,7 @@ package io.scalaland.endpoints.elm
 
 import java.io.File
 
-import io.scalaland.endpoints.elm.emit.{FileUtils, HttpEmit, TypeEmit}
+import io.scalaland.endpoints.elm.emit.{FileUtils, HttpEmit, NameUtils, TypeEmit}
 import io.scalaland.endpoints.elm.model._
 
 trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchemas {
@@ -57,8 +57,7 @@ trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchema
       .mapValues(_.map(_._2))
       .map {
         case (tag, moduleEndpoints) =>
-          val moduleName = tag.split("[/\\s+]").map(_.capitalize).mkString
-          ElmHttpModule(moduleName, moduleEndpoints)
+          ElmHttpModule(NameUtils.camelizeName(tag), moduleEndpoints)
       }
       .toSeq
   }
