@@ -5,11 +5,13 @@ import java.io.File
 import io.scalaland.endpoints.elm.emit.{FileUtils, HttpEmit, TypeEmit}
 import io.scalaland.endpoints.elm.model._
 
-trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchemas with BasicAuthentication {
+trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchemas {
 
-  def writeElmCode(targetDirectory: String, clean: Boolean = true)(
-    endpoints: ElmEndpoint*
-  )(httpApiUrlPrefix: String = "", withCredentials: Boolean = false, additionalContents: Seq[(File, String)] = Seq.empty): Unit = {
+  def writeElmCode(targetDirectory: String, clean: Boolean = true)(endpoints: ElmEndpoint*)(
+    httpApiUrlPrefix: String = "",
+    withCredentials: Boolean = false,
+    additionalContents: Seq[(File, String)] = Seq.empty
+  ): Unit = {
 
     if (clean) {
       FileUtils.cleanDirectory(new File(targetDirectory))

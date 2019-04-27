@@ -3,7 +3,7 @@ package io.scalaland.endpoints.elm
 import java.io.File
 
 import utest._
-import TestEndpoints._
+import TestElmEndpoints._
 
 import scala.io.Source
 
