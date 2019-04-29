@@ -2,8 +2,6 @@
 
 [![Build Status](https://travis-ci.org/scalalandio/endpoints-elm.svg?branch=master)](https://travis-ci.org/scalalandio/endpoints-elm)
 [![Maven Central](https://img.shields.io/maven-central/v/io.scalaland/endpoints-elm_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Cendpoints-elm)
-[![Javadocs](https://www.javadoc.io/badge/io.scalaland/endpoints-elm_2.12.svg?color=red&label=scaladoc)](https://www.javadoc.io/doc/io.scalaland/endpoints-elm_2.12)
-[![codecov.io](http://codecov.io/github/scalalandio/endpoints-elm/coverage.svg?branch=master)](http://codecov.io/github/scalalandio/endpoints-elm?branch=master)
 [![License](http://img.shields.io/:license-Apache%202-green.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
 Elm code generator based on Scala endpoints library (https://github.com/julienrf/endpoints).
@@ -37,5 +35,74 @@ Request/HttpModule3.elm
 ```
 
 ## Getting started
+
+To get started, first add project dependency to your `build.sbt`:
+
+```scala
+libraryDependencies += "io.scalaland" %% "endpoints-elm" % "0.9.0"
+```
+
+##### Endpoints definition
+
+If you follow [endpoints quick start guide](http://julienrf.github.io/endpoints/quick-start.html),
+you end up with something similar to:
+
+```scala
+import endpoints.{algebra, generic}
+
+case class Counter(value: Int)
+case class Increment(step: Int)
+
+trait CounterEndpoints
+    extends algebra.Endpoints
+    with algebra.JsonSchemaEntities
+    with algebra.JsonSchemas
+    with generic.JsonSchemas {
+
+  implicit lazy val counterSchema: JsonSchema[Counter] = named(genericJsonSchema[Counter], "Counter")
+  implicit lazy val incrementSchema: JsonSchema[Increment] = named(genericJsonSchema[Increment], "Increment")
+  
+  val currentValue: Endpoint[Unit, Counter] =
+    endpoint(
+      get(path / "current-value"),
+      jsonResponse[Counter](docs = Some("Coutner status")),
+      tags = List("Counter")
+    )
+
+  val increment: Endpoint[Increment, Unit] =
+    endpoint(
+      post(path / "increment", jsonRequest[Increment](docs = Some("Counter increment request"))),
+      emptyResponse(),
+      tags = List("Counter")
+    )
+}
+```
+
+For code generation purposes it's required to:
+- name your json schemas for types using `named(schema, "YourSchemaName")`
+- tag your endpoints using `tags = List("YourEndpointTag")`
+
+Type and file names in generated code is based on those names.
+
+##### Mixing code generator interpreter
+
+Then you need to mix in `io.scalaland.endpoints.elm.ElmCodeGenerator` with your endpoints trait.
+
+```scala
+import io.scalaland.endpoints.elm.ElmCodeGenerator
+
+object ElmCounterGen extends CounterEndpoints with ElmCodeGenerator {
+
+    def generateCode(): Unit = {
+      writeElmCode("target/directory")(currentValue, increment)()    
+    }
+}
+```
+
+Invoking `ElmCounterGen.generateCode()` will clean target directory,
+create `Data` and `Request` directories and write down elm modules for
+data types and http api client.
+
+##### Customizing code generation
 
 TBD
