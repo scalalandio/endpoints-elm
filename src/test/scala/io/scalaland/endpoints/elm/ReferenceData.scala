@@ -8,6 +8,6 @@ object ReferenceData {
 
   def from(resourceDir: String)(genFileNames: String*): Seq[(File, String)] = genFileNames.map { genFileName =>
       new File(genFileName) ->
-        Source.fromResource(s"$resourceDir/${genFileName}r.elm").getLines.mkString("\n")
+        Source.fromResource(s"$resourceDir/$genFileName").getLines.mkString("\n")
     }
 }
