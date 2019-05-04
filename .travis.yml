@@ -28,6 +28,7 @@ before_cache:
   - find $HOME/.sbt -name "*.lock" -delete
 
 before_script:
+  - npm i -g npm
   - cd elm-out && npm install && cd ..
 
 script:
