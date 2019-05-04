@@ -2,3 +2,6 @@
 project/project
 project/target
 target
+elm-out/node_modules
+elm-out/elm-stuff
+elm-out/src
