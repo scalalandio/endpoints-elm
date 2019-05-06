@@ -23,51 +23,57 @@ unitechoGet  =
     |> HttpBuilder.withTimeout 30000
 
 
-stringechoGet : String -> RequestBuilder String
-stringechoGet  =
+stringechoGet : String -> String -> RequestBuilder String
+stringechoGet  string =
   HttpBuilder.get ("/string-echo/" ++ )
+    |> HttpBuilder.withQueryParams ([("string",  string)])
     |> HttpBuilder.withExpectJson Decode.string
     |> HttpBuilder.withTimeout 30000
 
 
-intechoGet : Int -> RequestBuilder Int
-intechoGet  =
+intechoGet : Int -> Int -> RequestBuilder Int
+intechoGet  int =
   HttpBuilder.get ("/int-echo/" ++ String.fromInt )
+    |> HttpBuilder.withQueryParams ([("int", String.fromInt int)])
     |> HttpBuilder.withExpectJson Decode.int
     |> HttpBuilder.withTimeout 30000
 
 
-longechoGet : Int -> RequestBuilder Int
-longechoGet  =
+longechoGet : Int -> Int -> RequestBuilder Int
+longechoGet  long =
   HttpBuilder.get ("/long-echo/" ++ String.fromInt )
+    |> HttpBuilder.withQueryParams ([("long", String.fromInt long)])
     |> HttpBuilder.withExpectJson Decode.int
     |> HttpBuilder.withTimeout 30000
 
 
-floatechoGet : String -> RequestBuilder Float
-floatechoGet  =
-  HttpBuilder.get ("/float-echo/" ++ )
+floatechoPost : Float -> RequestBuilder Float
+floatechoPost float =
+  HttpBuilder.post "/float-echo"
+    |> HttpBuilder.withJsonBody (Encode.float  float)
     |> HttpBuilder.withExpectJson Decode.float
     |> HttpBuilder.withTimeout 30000
 
 
-doubleechoGet : String -> RequestBuilder Float
-doubleechoGet  =
-  HttpBuilder.get ("/double-echo/" ++ )
+doubleechoPost : Float -> RequestBuilder Float
+doubleechoPost float =
+  HttpBuilder.post "/double-echo"
+    |> HttpBuilder.withJsonBody (Encode.float  float)
     |> HttpBuilder.withExpectJson Decode.float
     |> HttpBuilder.withTimeout 30000
 
 
-booleanechoGet : String -> RequestBuilder Bool
-booleanechoGet  =
-  HttpBuilder.get ("/boolean-echo/" ++ )
+booleanechoPost : Bool -> RequestBuilder Bool
+booleanechoPost bool =
+  HttpBuilder.post "/boolean-echo"
+    |> HttpBuilder.withJsonBody (Encode.bool  bool)
     |> HttpBuilder.withExpectJson Decode.bool
     |> HttpBuilder.withTimeout 30000
 
 
-uuidechoGet : Uuid -> RequestBuilder Uuid
-uuidechoGet  =
+uuidechoGet : Uuid -> Uuid -> RequestBuilder Uuid
+uuidechoGet  uuid =
   HttpBuilder.get ("/uuid-echo/" ++ Uuid.toString )
+    |> HttpBuilder.withQueryParams ([("uuid", Uuid.toString uuid)])
     |> HttpBuilder.withExpectJson Uuid.decoder
     |> HttpBuilder.withTimeout 30000
-
