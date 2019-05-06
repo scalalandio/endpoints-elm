@@ -2,7 +2,7 @@ package io.scalaland.endpoints.elm
 
 import utest._
 
-object BasicTest extends TestSuite {
+object BasicTest extends CodegenTest {
 
   object Domain {
 
@@ -47,8 +47,11 @@ object BasicTest extends TestSuite {
 
     "generate code for simple domain model" - {
 
-      generateElmContents(currentValue, increment)() ==>
-        ReferenceData.from("basic-test")("Data/Counter.elm", "Data/Increment.elm", "Request/Counter.elm")
+      generateElmContents(currentValue, increment)() sameAs ReferenceData.from("basic-test")(
+        "Data/Counter.elm",
+        "Data/Increment.elm",
+        "Request/Counter.elm"
+      )
     }
   }
 }

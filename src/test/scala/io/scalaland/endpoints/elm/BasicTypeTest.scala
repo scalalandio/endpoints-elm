@@ -6,7 +6,7 @@ import java.util.UUID
 import io.scalaland.endpoints.elm.model.{CustomBasicType, ElmType}
 import utest._
 
-object BasicTypeTest extends TestSuite {
+object BasicTypeTest extends CodegenTest {
 
   object Domain {
 
@@ -114,15 +114,6 @@ object BasicTypeTest extends TestSuite {
 
     "generate code for simple domain model" - {
 
-      val expected = ReferenceData.from("basic-type-test")(
-        "Data/TimeOrID.elm",
-        "Data/io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.ID.elm",
-        "Data/io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.Time.elm",
-        "Request/BasicType.elm",
-        "Request/CustomBasicType.elm",
-        "Request/ProductCoproduct.elm"
-      )
-
       val generated = generateElmContents(
         unitEndpoint,
         stringEndpoint,
@@ -134,12 +125,14 @@ object BasicTypeTest extends TestSuite {
         uuidEndpoint,
         localDateEndpoint,
         timeOrIDEndpoint
-      )()
-
-      generated.sortBy(_._1.getPath) zip expected.sortBy(_._1.getPath) foreach {
-        case (gen, exp) =>
-          gen ==> exp
-      }
+      )() sameAs ReferenceData.from("basic-type-test")(
+        "Data/TimeOrID.elm",
+        "Data/io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.ID.elm",
+        "Data/io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.Time.elm",
+        "Request/BasicType.elm",
+        "Request/CustomBasicType.elm",
+        "Request/ProductCoproduct.elm"
+      )
     }
   }
 }
