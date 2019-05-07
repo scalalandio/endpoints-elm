@@ -38,7 +38,7 @@ trait CodegenTest extends TestSuite {
       }
 
       given.keySet foreach { file =>
-      val difference = diff(given(file), expected(file))
+        val difference = diff(given(file), expected(file))
         Predef.assert(difference.isEmpty, s"Difference at $file:\n ${difference.mkString("\n")}")
       }
     }
