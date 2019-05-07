@@ -7,19 +7,19 @@
 
 module Data.TimeOrID exposing (..)
 
-import Data.io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.ID exposing (..)
-import Data.io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.Time exposing (..)
+import Data.ID exposing (..)
+import Data.Time exposing (..)
 import Json.Decode as Decode exposing (Decoder)
 import Json.Decode.Pipeline exposing (optional, required)
 import Json.Encode as Encode
 
 
 type TimeOrID
-  = TimeOrIDIDType io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.ID
-  | TimeOrIDTimeType io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.Time
+  = TimeOrIDIDType ID
+  | TimeOrIDTimeType Time
 
 init : TimeOrID
-init = TimeOrIDIDType Data.io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.ID.init
+init = TimeOrIDIDType Data.ID.init
 
 decoder : Decoder TimeOrID
 decoder = Decode.field "type" Decode.string
@@ -28,10 +28,10 @@ decoder = Decode.field "type" Decode.string
 decoderTagged : String -> Decoder TimeOrID
 decoderTagged tag = case tag of
   "ID" ->
-    Decode.map TimeOrIDIDType Data.io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.ID.decoder
+    Decode.map TimeOrIDIDType Data.ID.decoder
 
   "Time" ->
-    Decode.map TimeOrIDTimeType Data.io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.Time.decoder
+    Decode.map TimeOrIDTimeType Data.Time.decoder
 
   _ ->
     Decode.fail <| "Trying to decode TimeOrID, but type " ++ tag ++ " is not supported!"
@@ -39,10 +39,10 @@ decoderTagged tag = case tag of
 encoder : TimeOrID -> Encode.Value
 encoder model = case model of
   TimeOrIDIDType id ->
-    Data.io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.ID.encoderTagged ("type", "ID" ) id
+    Data.ID.encoderTagged ("type", "ID" ) id
 
   TimeOrIDTimeType time ->
-    Data.io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.Time.encoderTagged ("type", "Time" ) time
+    Data.Time.encoderTagged ("type", "Time" ) time
 
 
 

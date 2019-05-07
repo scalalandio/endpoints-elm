@@ -10,7 +10,8 @@ object BasicTypeTest extends CodegenTest {
 
   object Domain {
 
-    import endpoints.{algebra, generic}
+    import endpoints.{algebra}
+    import io.scalaland.endpoints.macros
 
     sealed trait TimeOrID
     object TimeOrID {
@@ -18,7 +19,8 @@ object BasicTypeTest extends CodegenTest {
       final case class ID(value: UUID, msg: String) extends TimeOrID
     }
 
-    trait TestJsonSchemas extends generic.JsonSchemas {
+    // we actually need macros instead generic to handle name generation correctly
+    trait TestJsonSchemas extends macros.JsonSchemas {
       implicit def localTimeSchema: JsonSchema[LocalDate]
 
       implicit def timeSchema: JsonSchema[TimeOrID.Time] = named(genericJsonSchema[TimeOrID.Time], "Time")
@@ -128,8 +130,8 @@ object BasicTypeTest extends CodegenTest {
         timeOrIDEndpoint
       )() sameAs ReferenceData.from("basic-type-test")(
         "Data/TimeOrID.elm",
-        "Data/io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.ID.elm",
-        "Data/io.scalaland.endpoints.elm.BasicTypeTest.Domain.TimeOrID.Time.elm",
+        "Data/ID.elm",
+        "Data/Time.elm",
         "Request/BasicType.elm",
         "Request/CustomBasicType.elm",
         "Request/ProductCoproduct.elm"
