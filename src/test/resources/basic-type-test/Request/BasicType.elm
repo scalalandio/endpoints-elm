@@ -23,26 +23,26 @@ unitechoGet  =
     |> HttpBuilder.withTimeout 30000
 
 
-stringechoGet : String -> String -> RequestBuilder String
-stringechoGet  string =
-  HttpBuilder.get ("/StringEcho/" ++ )
-    |> HttpBuilder.withQueryParams ([("string",  string)])
+stringechoString1Get : String -> String -> RequestBuilder String
+stringechoString1Get string1 string2 =
+  HttpBuilder.get ("/StringEcho/" ++ string1)
+    |> HttpBuilder.withQueryParams ([("string2",  string2)])
     |> HttpBuilder.withExpectJson Decode.string
     |> HttpBuilder.withTimeout 30000
 
 
-intechoGet : Int -> Int -> RequestBuilder Int
-intechoGet  int =
-  HttpBuilder.get ("/IntEcho/" ++ String.fromInt )
-    |> HttpBuilder.withQueryParams ([("int", String.fromInt int)])
+intechoInt1Get : Int -> Int -> RequestBuilder Int
+intechoInt1Get int1 int2 =
+  HttpBuilder.get ("/IntEcho/" ++ String.fromInt int1)
+    |> HttpBuilder.withQueryParams ([("int2", String.fromInt int2)])
     |> HttpBuilder.withExpectJson Decode.int
     |> HttpBuilder.withTimeout 30000
 
 
-longechoGet : Int -> Int -> RequestBuilder Int
-longechoGet  long =
-  HttpBuilder.get ("/LongEcho/" ++ String.fromInt )
-    |> HttpBuilder.withQueryParams ([("long", String.fromInt long)])
+longechoLong1Get : Int -> Int -> RequestBuilder Int
+longechoLong1Get long1 long2 =
+  HttpBuilder.get ("/LongEcho/" ++ String.fromInt long1)
+    |> HttpBuilder.withQueryParams ([("long2", String.fromInt long2)])
     |> HttpBuilder.withExpectJson Decode.int
     |> HttpBuilder.withTimeout 30000
 
@@ -71,9 +71,9 @@ booleanechoPost bool =
     |> HttpBuilder.withTimeout 30000
 
 
-uuidechoGet : Uuid -> Uuid -> RequestBuilder Uuid
-uuidechoGet  uuid =
-  HttpBuilder.get ("/UuidEcho/" ++ Uuid.toString )
-    |> HttpBuilder.withQueryParams ([("uuid", Uuid.toString uuid)])
+uuidechoUuid1Get : Uuid -> Uuid -> RequestBuilder Uuid
+uuidechoUuid1Get uuid1 uuid2 =
+  HttpBuilder.get ("/UuidEcho/" ++ Uuid.toString uuid1)
+    |> HttpBuilder.withQueryParams ([("uuid2", Uuid.toString uuid2)])
     |> HttpBuilder.withExpectJson Uuid.decoder
     |> HttpBuilder.withTimeout 30000

@@ -21,7 +21,9 @@ object BasicTypeTest extends CodegenTest {
     trait TestJsonSchemas extends generic.JsonSchemas {
       implicit def localTimeSchema: JsonSchema[LocalDate]
 
-      implicit val timeOrIdSchema: JsonSchema[TimeOrID] = named(genericJsonSchema[TimeOrID], "TimeOrID")
+      implicit def timeSchema: JsonSchema[TimeOrID.Time] = named(genericJsonSchema[TimeOrID.Time], "Time")
+      implicit def idSchema: JsonSchema[TimeOrID.ID] = named(genericJsonSchema[TimeOrID.ID], "ID")
+      implicit def timeOrIdSchema: JsonSchema[TimeOrID] = named(genericJsonSchema[TimeOrID], "TimeOrID")
     }
 
     trait TestEndpoints
@@ -36,19 +38,19 @@ object BasicTypeTest extends CodegenTest {
         endpoint(get(path / "UnitEcho"), emptyResponse(docs = Some("Unit echo")), tags = List("BasicType"))
       val stringEndpoint: Endpoint[(String, String), String] =
         endpoint(
-          get(path / "StringEcho" / segment[String]() /? qs[String]("string")),
+          get(path / "StringEcho" / segment[String]("string1") /? qs[String]("string2")),
           jsonResponse[String](docs = Some("String echo")),
           tags = List("BasicType")
         )
       val intEndpoint: Endpoint[(Int, Int), Int] =
         endpoint(
-          get(path / "IntEcho" / segment[Int]() /? qs[Int]("int")),
+          get(path / "IntEcho" / segment[Int]("int1") /? qs[Int]("int2")),
           jsonResponse[Int](docs = Some("Int echo")),
           tags = List("BasicType")
         )
       val longEndpoint: Endpoint[(Long, Long), Long] =
         endpoint(
-          get(path / "LongEcho" / segment[Long]() /? qs[Long]("long")),
+          get(path / "LongEcho" / segment[Long]("long1") /? qs[Long]("long2")),
           jsonResponse[Long](docs = Some("Long echo")),
           tags = List("BasicType")
         )
@@ -72,7 +74,7 @@ object BasicTypeTest extends CodegenTest {
         )
       val uuidEndpoint: Endpoint[(UUID, UUID), UUID] =
         endpoint(
-          get(path / "UuidEcho" / segment[UUID]() /? qs[UUID]("uuid")),
+          get(path / "UuidEcho" / segment[UUID]("uuid1") /? qs[UUID]("uuid2")),
           jsonResponse[UUID](docs = Some("UUID echo")),
           tags = List("BasicType")
         )
@@ -81,7 +83,6 @@ object BasicTypeTest extends CodegenTest {
 
       implicit def localTimeSegment: Segment[LocalDate]
       implicit def localTimeQuery: QueryStringParam[LocalDate]
-      //implicit def localTimeSchema: JsonSchema[LocalDate]
 
       val localDateEndpoint: Endpoint[(LocalDate, LocalDate), LocalDate] =
         endpoint(
