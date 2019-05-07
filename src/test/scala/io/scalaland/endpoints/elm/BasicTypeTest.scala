@@ -33,46 +33,46 @@ object BasicTypeTest extends CodegenTest {
       // basic types - build into Elm
 
       val unitEndpoint: Endpoint[Unit, Unit] =
-        endpoint(get(path / "unit-echo"), emptyResponse(docs = Some("Unit echo")), tags = List("BasicType"))
+        endpoint(get(path / "UnitEcho"), emptyResponse(docs = Some("Unit echo")), tags = List("BasicType"))
       val stringEndpoint: Endpoint[(String, String), String] =
         endpoint(
-          get(path / "string-echo" / segment[String]() /? qs[String]("string")),
+          get(path / "StringEcho" / segment[String]() /? qs[String]("string")),
           jsonResponse[String](docs = Some("String echo")),
           tags = List("BasicType")
         )
       val intEndpoint: Endpoint[(Int, Int), Int] =
         endpoint(
-          get(path / "int-echo" / segment[Int]() /? qs[Int]("int")),
+          get(path / "IntEcho" / segment[Int]() /? qs[Int]("int")),
           jsonResponse[Int](docs = Some("Int echo")),
           tags = List("BasicType")
         )
       val longEndpoint: Endpoint[(Long, Long), Long] =
         endpoint(
-          get(path / "long-echo" / segment[Long]() /? qs[Long]("long")),
+          get(path / "LongEcho" / segment[Long]() /? qs[Long]("long")),
           jsonResponse[Long](docs = Some("Long echo")),
           tags = List("BasicType")
         )
       val floatEndpoint: Endpoint[Float, Float] =
         endpoint(
-          post(path / "float-echo", jsonRequest[Float]()),
+          post(path / "FloatEcho", jsonRequest[Float]()),
           jsonResponse[Float](docs = Some("Float echo")),
           tags = List("BasicType")
         )
       val doubleEndpoint: Endpoint[Double, Double] =
         endpoint(
-          post(path / "double-echo", jsonRequest[Double]()),
+          post(path / "DoubleEcho", jsonRequest[Double]()),
           jsonResponse[Double](docs = Some("Double echo")),
           tags = List("BasicType")
         )
       val booleanEndpoint: Endpoint[Boolean, Boolean] =
         endpoint(
-          post(path / "boolean-echo", jsonRequest[Boolean]()),
+          post(path / "BooleanEcho", jsonRequest[Boolean]()),
           jsonResponse[Boolean](docs = Some("Boolean echo")),
           tags = List("BasicType")
         )
       val uuidEndpoint: Endpoint[(UUID, UUID), UUID] =
         endpoint(
-          get(path / "uuid-echo" / segment[UUID]() /? qs[UUID]("uuid")),
+          get(path / "UuidEcho" / segment[UUID]() /? qs[UUID]("uuid")),
           jsonResponse[UUID](docs = Some("UUID echo")),
           tags = List("BasicType")
         )
@@ -85,7 +85,7 @@ object BasicTypeTest extends CodegenTest {
 
       val localDateEndpoint: Endpoint[(LocalDate, LocalDate), LocalDate] =
         endpoint(
-          get(path / "local-date-echo" / segment[LocalDate]() /? qs[LocalDate]("local-date")),
+          get(path / "LocalDateEcho" / segment[LocalDate]() /? qs[LocalDate]("localDate")),
           jsonResponse[LocalDate](docs = Some("LocalDate echo")),
           tags = List("CustomBasicType")
         )
@@ -94,8 +94,8 @@ object BasicTypeTest extends CodegenTest {
 
       val timeOrIDEndpoint: Endpoint[TimeOrID, TimeOrID] =
         endpoint(
-          post(path / "time-or-id-echo", jsonRequest[TimeOrID]()),
-          jsonResponse[TimeOrID](docs = Some("LocalDate echo")),
+          post(path / "TimeOrIDEcho", jsonRequest[TimeOrID]()),
+          jsonResponse[TimeOrID](docs = Some("TimeOrID echo")),
           tags = List("ProductCoproduct")
         )
     }
@@ -114,7 +114,7 @@ object BasicTypeTest extends CodegenTest {
 
     "generate code for simple domain model" - {
 
-      val generated = generateElmContents(
+      generateElmContents(
         unitEndpoint,
         stringEndpoint,
         intEndpoint,

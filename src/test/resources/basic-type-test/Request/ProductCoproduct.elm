@@ -18,7 +18,7 @@ import Data.TimeOrID exposing (..)
 
 timeoridechoPost : TimeOrID -> RequestBuilder TimeOrID
 timeoridechoPost timeOrID =
-  HttpBuilder.post "/time-or-id-echo"
+  HttpBuilder.post "/TimeOrIDEcho"
     |> HttpBuilder.withJsonBody (Data.TimeOrID.encoder  timeOrID)
     |> HttpBuilder.withExpectJson Data.TimeOrID.decoder
     |> HttpBuilder.withTimeout 30000
