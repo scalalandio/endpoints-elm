@@ -23,8 +23,10 @@ object BasicTypeTest extends CodegenTest {
     trait TestJsonSchemas extends macros.JsonSchemas {
       implicit def dateSchema: JsonSchema[LocalDate]
 
-      implicit def dateCaseSchema: JsonSchema[DateOrUuid.DateCase] = named(genericJsonSchema[DateOrUuid.DateCase], "DateCase")
-      implicit def uuidCaseSchema: JsonSchema[DateOrUuid.UuidCase] = named(genericJsonSchema[DateOrUuid.UuidCase], "UuidCase")
+      implicit def dateCaseSchema: JsonSchema[DateOrUuid.DateCase] =
+        named(genericJsonSchema[DateOrUuid.DateCase], "DateCase")
+      implicit def uuidCaseSchema: JsonSchema[DateOrUuid.UuidCase] =
+        named(genericJsonSchema[DateOrUuid.UuidCase], "UuidCase")
       implicit def dateOrUuidSchema: JsonSchema[DateOrUuid] = named(genericJsonSchema[DateOrUuid], "DateOrUuid")
     }
 
@@ -37,11 +39,7 @@ object BasicTypeTest extends CodegenTest {
       // basic types - build into Elm
 
       def unitEndpoint: Endpoint[Unit, Unit] =
-        endpoint(
-          get(path / "UnitEcho"),
-          emptyResponse(docs = Some("Unit echo")),
-          tags = List("BasicType")
-        )
+        endpoint(get(path / "UnitEcho"), emptyResponse(docs = Some("Unit echo")), tags = List("BasicType"))
 
       def stringEndpoint: Endpoint[(String, String), String] =
         endpoint(
@@ -149,7 +147,7 @@ object BasicTypeTest extends CodegenTest {
 
     "generate code for simple domain model" - {
 
-      generateElmContents(allEndpoints : _*)() sameAs ReferenceData.from("basic-type-test")(
+      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("basic-type-test")(
         "Data/DateOrUuid.elm",
         "Data/DateCase.elm",
         "Data/UuidCase.elm",

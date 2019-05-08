@@ -55,7 +55,7 @@ object BasicTest extends CodegenTest {
 
     "generate code for simple domain model" - {
 
-      generateElmContents(allEndpoints : _*)() sameAs ReferenceData.from("basic-test")(
+      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("basic-test")(
         "Data/Counter.elm",
         "Data/Increment.elm",
         "Request/Counter.elm"

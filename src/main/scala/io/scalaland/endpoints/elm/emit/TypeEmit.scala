@@ -67,13 +67,13 @@ object TypeEmit {
   def initDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
     case basicType: BasicType =>
       basicType match {
-        case cbt: CustomBasicType  => cbt.initExpr
-        case BasicType.Unit        => "()"
-        case BasicType.String      => "\"\""
-        case BasicType.Int         => "0"
-        case BasicType.Float       => "0.0"
-        case BasicType.Bool        => "False"
-        case BasicType.Uuid        => "Tuple.first <| step Uuid.uuidGenerator (initialSeed 0)"
+        case cbt: CustomBasicType => cbt.initExpr
+        case BasicType.Unit       => "()"
+        case BasicType.String     => "\"\""
+        case BasicType.Int        => "0"
+        case BasicType.Float      => "0.0"
+        case BasicType.Bool       => "False"
+        case BasicType.Uuid       => "Tuple.first <| step Uuid.uuidGenerator (initialSeed 0)"
       }
     case appliedType: AppliedType =>
       appliedType match {
@@ -99,13 +99,13 @@ object TypeEmit {
   def encoderDefinition(elmType: ElmType, arg: String, topLevel: Boolean = true): String = elmType match {
     case basicType: BasicType =>
       basicType match {
-        case cbt: CustomBasicType  => s"(${cbt.encoderExpr}) $arg"
-        case BasicType.Unit        => "Encode.object []"
-        case BasicType.String      => s"Encode.string $arg"
-        case BasicType.Int         => s"Encode.int $arg"
-        case BasicType.Float       => s"Encode.float $arg"
-        case BasicType.Bool        => s"Encode.bool $arg"
-        case BasicType.Uuid        => s"Uuid.encode $arg"
+        case cbt: CustomBasicType => s"(${cbt.encoderExpr}) $arg"
+        case BasicType.Unit       => "Encode.object []"
+        case BasicType.String     => s"Encode.string $arg"
+        case BasicType.Int        => s"Encode.int $arg"
+        case BasicType.Float      => s"Encode.float $arg"
+        case BasicType.Bool       => s"Encode.bool $arg"
+        case BasicType.Uuid       => s"Uuid.encode $arg"
       }
     case appliedType: AppliedType =>
       appliedType match {
@@ -161,13 +161,13 @@ object TypeEmit {
   def decoderDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
     case basicType: BasicType =>
       basicType match {
-        case cbt: CustomBasicType  => s"(${cbt.decoderExpr})"
-        case BasicType.Unit        => "Decode.succeed ()"
-        case BasicType.String      => "Decode.string"
-        case BasicType.Int         => "Decode.int"
-        case BasicType.Float       => "Decode.float"
-        case BasicType.Bool        => "Decode.bool"
-        case BasicType.Uuid        => "Uuid.decoder"
+        case cbt: CustomBasicType => s"(${cbt.decoderExpr})"
+        case BasicType.Unit       => "Decode.succeed ()"
+        case BasicType.String     => "Decode.string"
+        case BasicType.Int        => "Decode.int"
+        case BasicType.Float      => "Decode.float"
+        case BasicType.Bool       => "Decode.bool"
+        case BasicType.Uuid       => "Uuid.decoder"
       }
     case appliedType: AppliedType =>
       val decoder = appliedType match {
@@ -224,9 +224,9 @@ object TypeEmit {
   def imports(elmType: ElmType, topLevel: Boolean = true): Seq[String] = elmType match {
     case basicType: BasicType =>
       basicType match {
-        case cbt: CustomBasicType  => Seq(cbt.name)
-        case BasicType.Uuid        => Seq("Uuid", "Random")
-        case _                     => Nil
+        case cbt: CustomBasicType => Seq(cbt.name)
+        case BasicType.Uuid       => Seq("Uuid", "Random")
+        case _                    => Nil
       }
     case appliedType: AppliedType =>
       val dict = if (appliedType.isInstanceOf[Dict]) Seq("Dict") else Nil

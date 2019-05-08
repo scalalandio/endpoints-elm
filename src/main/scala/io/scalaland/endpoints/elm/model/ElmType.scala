@@ -6,13 +6,7 @@ sealed abstract class BasicType(val name: String) extends ElmType
 
 object CustomBasicType {
   def apply(name: String): CustomBasicType =
-    CustomBasicType(
-      name,
-      s"$name.init",
-      s"$name.encoder",
-      s"$name.decoder",
-      s"$name.toString"
-    )
+    CustomBasicType(name, s"$name.init", s"$name.encoder", s"$name.decoder", s"$name.toString")
 }
 
 case class CustomBasicType(override val name: String,
@@ -20,7 +14,7 @@ case class CustomBasicType(override val name: String,
                            encoderExpr: String,
                            decoderExpr: String,
                            toStringExpr: String)
-  extends BasicType(name)
+    extends BasicType(name)
 
 object BasicType {
   object Unit extends BasicType("()")

@@ -1,6 +1,5 @@
 package io.scalaland.endpoints.elm
 
-
 object CodeEmitTest extends App with ElmCodeGenerator {
 
   args match {
@@ -9,9 +8,9 @@ object CodeEmitTest extends App with ElmCodeGenerator {
 
       val allEndpoints =
         BasicTest.Domain.TestElmEndpoints.allEndpoints ++
-        BasicTypeTest.Domain.TestElmEndpoints.allEndpoints
+          BasicTypeTest.Domain.TestElmEndpoints.allEndpoints
 
-      writeElmCode(outputDir)(allEndpoints : _*)()
+      writeElmCode(outputDir)(allEndpoints: _*)()
 
     case _ =>
       println("usage: CodeEmitTest [output_dir]")
