@@ -10,15 +10,16 @@ module Request.CustomBasicType exposing (..)
 import Http
 import HttpBuilder exposing (RequestBuilder)
 import Json.Decode as Decode
+import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
 
+import Date exposing (..)
 
 
-
-localdateechoGet : Date -> Date -> RequestBuilder Date
-localdateechoGet  localDate =
-  HttpBuilder.get ("/LocalDateEcho/" ++ toString )
-    |> HttpBuilder.withQueryParams ([("localDate", toString localDate)])
+localdateechoDate1Get : Date -> Date -> RequestBuilder Date
+localdateechoDate1Get date1 date2 =
+  HttpBuilder.get ("/LocalDateEcho/" ++ Date.toIsoString date1)
+    |> HttpBuilder.withQueryParams ([("date2", Date.toIsoString date2)])
     |> HttpBuilder.withExpectJson (Decode.string |> Decode.andThen (Date.fromIsoString >> Result.map Decode.succeed >> Result.withDefault (Decode.fail "can't parse the date!")))
     |> HttpBuilder.withTimeout 30000
