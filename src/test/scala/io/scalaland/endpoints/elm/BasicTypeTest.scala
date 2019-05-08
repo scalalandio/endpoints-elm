@@ -3,29 +3,29 @@ package io.scalaland.endpoints.elm
 import java.time.LocalDate
 import java.util.UUID
 
-import io.scalaland.endpoints.elm.model.{CustomBasicType, ElmType}
+import io.scalaland.endpoints.elm.model.{CustomBasicType, ElmEndpoint, ElmType}
 import utest._
 
 object BasicTypeTest extends CodegenTest {
 
   object Domain {
 
-    import endpoints.{algebra}
+    import endpoints.algebra
     import io.scalaland.endpoints.macros
 
-    sealed trait TimeOrID
-    object TimeOrID {
-      final case class Time(value: LocalDate, msg: String) extends TimeOrID
-      final case class ID(value: UUID, msg: String) extends TimeOrID
+    sealed trait DateOrUuid
+    object DateOrUuid {
+      final case class DateCase(value: LocalDate, msg: String) extends DateOrUuid
+      final case class UuidCase(value: UUID, msg: String) extends DateOrUuid
     }
 
     // we actually need macros instead generic to handle name generation correctly
     trait TestJsonSchemas extends macros.JsonSchemas {
-      implicit def localTimeSchema: JsonSchema[LocalDate]
+      implicit def dateSchema: JsonSchema[LocalDate]
 
-      implicit def timeSchema: JsonSchema[TimeOrID.Time] = named(genericJsonSchema[TimeOrID.Time], "Time")
-      implicit def idSchema: JsonSchema[TimeOrID.ID] = named(genericJsonSchema[TimeOrID.ID], "ID")
-      implicit def timeOrIdSchema: JsonSchema[TimeOrID] = named(genericJsonSchema[TimeOrID], "TimeOrID")
+      implicit def dateCaseSchema: JsonSchema[DateOrUuid.DateCase] = named(genericJsonSchema[DateOrUuid.DateCase], "DateCase")
+      implicit def uuidCaseSchema: JsonSchema[DateOrUuid.UuidCase] = named(genericJsonSchema[DateOrUuid.UuidCase], "UuidCase")
+      implicit def dateOrUuidSchema: JsonSchema[DateOrUuid] = named(genericJsonSchema[DateOrUuid], "DateOrUuid")
     }
 
     trait TestEndpoints
@@ -36,45 +36,56 @@ object BasicTypeTest extends CodegenTest {
 
       // basic types - build into Elm
 
-      val unitEndpoint: Endpoint[Unit, Unit] =
-        endpoint(get(path / "UnitEcho"), emptyResponse(docs = Some("Unit echo")), tags = List("BasicType"))
-      val stringEndpoint: Endpoint[(String, String), String] =
+      def unitEndpoint: Endpoint[Unit, Unit] =
+        endpoint(
+          get(path / "UnitEcho"),
+          emptyResponse(docs = Some("Unit echo")),
+          tags = List("BasicType")
+        )
+
+      def stringEndpoint: Endpoint[(String, String), String] =
         endpoint(
           get(path / "StringEcho" / segment[String]("string1") /? qs[String]("string2")),
           jsonResponse[String](docs = Some("String echo")),
           tags = List("BasicType")
         )
-      val intEndpoint: Endpoint[(Int, Int), Int] =
+
+      def intEndpoint: Endpoint[(Int, Int), Int] =
         endpoint(
           get(path / "IntEcho" / segment[Int]("int1") /? qs[Int]("int2")),
           jsonResponse[Int](docs = Some("Int echo")),
           tags = List("BasicType")
         )
-      val longEndpoint: Endpoint[(Long, Long), Long] =
+
+      def longEndpoint: Endpoint[(Long, Long), Long] =
         endpoint(
           get(path / "LongEcho" / segment[Long]("long1") /? qs[Long]("long2")),
           jsonResponse[Long](docs = Some("Long echo")),
           tags = List("BasicType")
         )
-      val floatEndpoint: Endpoint[Float, Float] =
+
+      def floatEndpoint: Endpoint[Float, Float] =
         endpoint(
           post(path / "FloatEcho", jsonRequest[Float]()),
           jsonResponse[Float](docs = Some("Float echo")),
           tags = List("BasicType")
         )
-      val doubleEndpoint: Endpoint[Double, Double] =
+
+      def doubleEndpoint: Endpoint[Double, Double] =
         endpoint(
           post(path / "DoubleEcho", jsonRequest[Double]()),
           jsonResponse[Double](docs = Some("Double echo")),
           tags = List("BasicType")
         )
-      val booleanEndpoint: Endpoint[Boolean, Boolean] =
+
+      def booleanEndpoint: Endpoint[Boolean, Boolean] =
         endpoint(
           post(path / "BooleanEcho", jsonRequest[Boolean]()),
           jsonResponse[Boolean](docs = Some("Boolean echo")),
           tags = List("BasicType")
         )
-      val uuidEndpoint: Endpoint[(UUID, UUID), UUID] =
+
+      def uuidEndpoint: Endpoint[(UUID, UUID), UUID] =
         endpoint(
           get(path / "UuidEcho" / segment[UUID]("uuid1") /? qs[UUID]("uuid2")),
           jsonResponse[UUID](docs = Some("UUID echo")),
@@ -83,22 +94,22 @@ object BasicTypeTest extends CodegenTest {
 
       // custom basic type - *we* defined it in our application and it can be used by codegen as primitive
 
-      implicit def localTimeSegment: Segment[LocalDate]
-      implicit def localTimeQuery: QueryStringParam[LocalDate]
+      implicit def dateSegment: Segment[LocalDate]
+      implicit def dateQueryStringParam: QueryStringParam[LocalDate]
 
-      val localDateEndpoint: Endpoint[(LocalDate, LocalDate), LocalDate] =
+      def localDateEndpoint: Endpoint[(LocalDate, LocalDate), LocalDate] =
         endpoint(
-          get(path / "LocalDateEcho" / segment[LocalDate]() /? qs[LocalDate]("localDate")),
+          get(path / "LocalDateEcho" / segment[LocalDate]("date1") /? qs[LocalDate]("date2")),
           jsonResponse[LocalDate](docs = Some("LocalDate echo")),
           tags = List("CustomBasicType")
         )
 
       // product and coproducts
 
-      val timeOrIDEndpoint: Endpoint[TimeOrID, TimeOrID] =
+      def dateOrIDEndpoint: Endpoint[DateOrUuid, DateOrUuid] =
         endpoint(
-          post(path / "TimeOrIDEcho", jsonRequest[TimeOrID]()),
-          jsonResponse[TimeOrID](docs = Some("TimeOrID echo")),
+          post(path / "DateOrIDEcho", jsonRequest[DateOrUuid]()),
+          jsonResponse[DateOrUuid](docs = Some("DateOrID echo")),
           tags = List("ProductCoproduct")
         )
     }
@@ -106,18 +117,19 @@ object BasicTypeTest extends CodegenTest {
     object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator {
       // custom basic type definitions
 
-      implicit def localTimeSegment: ElmType = CustomBasicType("LocalDate")
-      implicit def localTimeQuery: ElmType = CustomBasicType("LocalDate")
-      implicit def localTimeSchema: ElmType = CustomBasicType("TimeOnly")
-    }
-  }
+      val dateCustomType = CustomBasicType(
+        "Date",
+        "Date.fromOrdinalDate 1970 1",
+        "Encode.string << Date.toIsoString",
+        """Decode.string |> Decode.andThen (Date.fromIsoString >> Result.map Decode.succeed >> Result.withDefault (Decode.fail "can't parse the date!"))""",
+        "Date.toIsoString"
+      )
 
-  val tests = Tests {
-    import Domain.TestElmEndpoints._
+      implicit def dateSegment: ElmType = dateCustomType
+      implicit def dateQueryStringParam: ElmType = dateCustomType
+      implicit def dateSchema: ElmType = dateCustomType
 
-    "generate code for simple domain model" - {
-
-      generateElmContents(
+      val allEndpoints: Seq[ElmEndpoint] = Seq(
         unitEndpoint,
         stringEndpoint,
         intEndpoint,
@@ -127,11 +139,20 @@ object BasicTypeTest extends CodegenTest {
         booleanEndpoint,
         uuidEndpoint,
         localDateEndpoint,
-        timeOrIDEndpoint
-      )() sameAs ReferenceData.from("basic-type-test")(
-        "Data/TimeOrID.elm",
-        "Data/ID.elm",
-        "Data/Time.elm",
+        dateOrIDEndpoint
+      )
+    }
+  }
+
+  val tests = Tests {
+    import Domain.TestElmEndpoints._
+
+    "generate code for simple domain model" - {
+
+      generateElmContents(allEndpoints : _*)() sameAs ReferenceData.from("basic-type-test")(
+        "Data/DateOrUuid.elm",
+        "Data/DateCase.elm",
+        "Data/UuidCase.elm",
         "Request/BasicType.elm",
         "Request/CustomBasicType.elm",
         "Request/ProductCoproduct.elm"

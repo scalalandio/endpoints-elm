@@ -41,6 +41,7 @@ setStep : Int -> Increment -> Increment
 setStep newStep increment =
   { increment | step = newStep }
 
+
 updateStep : (Int -> Int) -> Increment -> Increment
 updateStep f increment =
   { increment | step = f increment.step }

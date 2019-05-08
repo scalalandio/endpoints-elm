@@ -13,12 +13,12 @@ import Json.Decode as Decode
 import Bool.Extra
 import Maybe.Extra
 
-import Data.TimeOrID exposing (..)
+import Data.DateOrUuid exposing (..)
 
 
-timeoridechoPost : TimeOrID -> RequestBuilder TimeOrID
-timeoridechoPost timeOrID =
-  HttpBuilder.post "/TimeOrIDEcho"
-    |> HttpBuilder.withJsonBody (Data.TimeOrID.encoder  timeOrID)
-    |> HttpBuilder.withExpectJson Data.TimeOrID.decoder
+dateoridechoPost : DateOrUuid -> RequestBuilder DateOrUuid
+dateoridechoPost dateOrUuid =
+  HttpBuilder.post "/DateOrIDEcho"
+    |> HttpBuilder.withJsonBody (Data.DateOrUuid.encoder  dateOrUuid)
+    |> HttpBuilder.withExpectJson Data.DateOrUuid.decoder
     |> HttpBuilder.withTimeout 30000

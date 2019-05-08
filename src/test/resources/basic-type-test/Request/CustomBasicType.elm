@@ -16,9 +16,9 @@ import Maybe.Extra
 
 
 
-localdateechoGet : LocalDate -> LocalDate -> RequestBuilder TimeOnly
+localdateechoGet : Date -> Date -> RequestBuilder Date
 localdateechoGet  localDate =
   HttpBuilder.get ("/LocalDateEcho/" ++ toString )
     |> HttpBuilder.withQueryParams ([("localDate", toString localDate)])
-    |> HttpBuilder.withExpectJson TimeOnly.decoder
+    |> HttpBuilder.withExpectJson (Decode.string |> Decode.andThen (Date.fromIsoString >> Result.map Decode.succeed >> Result.withDefault (Decode.fail "can't parse the date!")))
     |> HttpBuilder.withTimeout 30000

@@ -20,6 +20,7 @@ object HttpEmit {
     s"""import Http
        |import HttpBuilder exposing (RequestBuilder)
        |import Json.Decode as Decode
+       |import Json.Encode as Encode
        |import Bool.Extra
        |import Maybe.Extra
        |""".stripMargin
@@ -95,7 +96,7 @@ object HttpEmit {
         case StaticSegment(s) =>
           s
         case VariableSegment(nme, tpe) =>
-          val stringArg = toStringFunctionName(tpe)
+          val stringArg = toStringFunctionExpr(tpe)
             .map(toString => s"$toString $nme")
             .getOrElse(nme)
           s"""" ++ $stringArg ++ """"
@@ -110,22 +111,23 @@ object HttpEmit {
     }
   }
 
-  def toStringFunctionName(elmType: ElmType): Option[String] = elmType match {
-    case BasicType.Uuid   => Some("Uuid.toString")
-    case BasicType.String => None
-    case BasicType.Bool   => Some("(String.toLower << Bool.Extra.toString)")
-    case BasicType.Int    => Some("String.fromInt")
-    case _                => Some("toString")
+  def toStringFunctionExpr(elmType: ElmType): Option[String] = elmType match {
+    case BasicType.Uuid       => Some("Uuid.toString")
+    case BasicType.String     => None
+    case BasicType.Bool       => Some("(String.toLower << Bool.Extra.toString)")
+    case BasicType.Int        => Some("String.fromInt")
+    case cbt: CustomBasicType => Some(cbt.toStringExpr)
+    case _                    => Some("toString")
   }
 
   def toQueryParamsListElems(queryParamName: String, elmType: ElmType): String = elmType match {
     case AppliedType.Maybe(tpe) =>
-      s"""($queryParamName |> Maybe.map (\\p -> ("$queryParamName", ${toStringFunctionName(tpe)
+      s"""($queryParamName |> Maybe.map (\\p -> ("$queryParamName", ${toStringFunctionExpr(tpe)
         .getOrElse("")} p)) |> Maybe.Extra.toList)"""
     case AppliedType.List(tpe) =>
-      s"""($queryParamName |> List.map (\\p -> ("$queryParamName", ${toStringFunctionName(tpe).getOrElse("")} p))"""
+      s"""($queryParamName |> List.map (\\p -> ("$queryParamName", ${toStringFunctionExpr(tpe).getOrElse("")} p))"""
     case _: BasicType =>
-      s"""[("$queryParamName", ${toStringFunctionName(elmType).getOrElse("")} $queryParamName)]"""
+      s"""[("$queryParamName", ${toStringFunctionExpr(elmType).getOrElse("")} $queryParamName)]"""
     case _ =>
       s"[{- unsupported query params type in elm codegen: $elmType -}]"
   }

@@ -1,18 +1,22 @@
 package io.scalaland.endpoints.elm
 
+import io.scalaland.endpoints.elm.model.ElmEndpoint
 import utest._
+
+import scala.reflect.ClassTag
 
 object BasicTest extends CodegenTest {
 
   object Domain {
 
-    import endpoints.{algebra, generic}
+    import endpoints.algebra
+    import io.scalaland.endpoints.macros
 
     case class Counter(value: Int)
 
     case class Increment(step: Int)
 
-    trait TestJsonSchemas extends generic.JsonSchemas {
+    trait TestJsonSchemas extends macros.JsonSchemas {
 
       implicit lazy val counterSchema: JsonSchema[Counter] = named(genericJsonSchema[Counter], "Counter")
       implicit lazy val incrementSchema: JsonSchema[Increment] = named(genericJsonSchema[Increment], "Increment")
@@ -27,7 +31,7 @@ object BasicTest extends CodegenTest {
       val currentValue: Endpoint[Unit, Counter] =
         endpoint(
           get(path / "current-value"),
-          jsonResponse[Counter](docs = Some("Coutner status")),
+          jsonResponse[Counter](docs = Some("Counter status")),
           tags = List("Counter")
         )
 
@@ -39,7 +43,11 @@ object BasicTest extends CodegenTest {
         )
     }
 
-    object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator
+    object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator {
+
+      val allEndpoints: Seq[ElmEndpoint] =
+        Seq(currentValue, increment)
+    }
   }
 
   val tests = Tests {
@@ -47,7 +55,7 @@ object BasicTest extends CodegenTest {
 
     "generate code for simple domain model" - {
 
-      generateElmContents(currentValue, increment)() sameAs ReferenceData.from("basic-test")(
+      generateElmContents(allEndpoints : _*)() sameAs ReferenceData.from("basic-test")(
         "Data/Counter.elm",
         "Data/Increment.elm",
         "Request/Counter.elm"

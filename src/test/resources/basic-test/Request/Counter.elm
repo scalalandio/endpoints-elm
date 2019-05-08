@@ -30,4 +30,3 @@ incrementPost increment =
     |> HttpBuilder.withJsonBody (Data.Increment.encoder  increment)
     |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
     |> HttpBuilder.withTimeout 30000
-

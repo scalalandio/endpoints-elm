@@ -67,7 +67,7 @@ object TypeEmit {
   def initDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
     case basicType: BasicType =>
       basicType match {
-        case CustomBasicType(name) => s"$name.init"
+        case cbt: CustomBasicType  => cbt.initExpr
         case BasicType.Unit        => "()"
         case BasicType.String      => "\"\""
         case BasicType.Int         => "0"
@@ -99,7 +99,7 @@ object TypeEmit {
   def encoderDefinition(elmType: ElmType, arg: String, topLevel: Boolean = true): String = elmType match {
     case basicType: BasicType =>
       basicType match {
-        case CustomBasicType(name) => s"$name.encoder $arg"
+        case cbt: CustomBasicType  => s"(${cbt.encoderExpr}) $arg"
         case BasicType.Unit        => "Encode.object []"
         case BasicType.String      => s"Encode.string $arg"
         case BasicType.Int         => s"Encode.int $arg"
@@ -161,7 +161,7 @@ object TypeEmit {
   def decoderDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
     case basicType: BasicType =>
       basicType match {
-        case CustomBasicType(name) => s"$name.decoder"
+        case cbt: CustomBasicType  => s"(${cbt.decoderExpr})"
         case BasicType.Unit        => "Decode.succeed ()"
         case BasicType.String      => "Decode.string"
         case BasicType.Int         => "Decode.int"
@@ -224,7 +224,7 @@ object TypeEmit {
   def imports(elmType: ElmType, topLevel: Boolean = true): Seq[String] = elmType match {
     case basicType: BasicType =>
       basicType match {
-        case CustomBasicType(name) => Seq(name)
+        case cbt: CustomBasicType  => Seq(cbt.name)
         case BasicType.Uuid        => Seq("Uuid", "Random")
         case _                     => Nil
       }
@@ -264,7 +264,8 @@ object TypeEmit {
           List(
             s"set${NameUtils.camelizeName(fieldName)} : $fieldTypeRef -> $tpeRef -> $tpeRef",
             s"set${NameUtils.camelizeName(fieldName)} new${NameUtils.camelizeName(fieldName)} $argName =",
-            s"  { $argName | $fieldName = new${NameUtils.camelizeName(fieldName)} }"
+            s"  { $argName | $fieldName = new${NameUtils.camelizeName(fieldName)} }",
+            ""
           )
       }
     case _ =>
@@ -281,7 +282,8 @@ object TypeEmit {
           List(
             s"update${NameUtils.camelizeName(fieldName)} : ($fieldTypeRef -> $fieldTypeRef) -> $tpeRef -> $tpeRef",
             s"update${NameUtils.camelizeName(fieldName)} f $argName =",
-            s"  { $argName | $fieldName = f $argName.$fieldName }"
+            s"  { $argName | $fieldName = f $argName.$fieldName }",
+            ""
           )
       }
     case _ =>
