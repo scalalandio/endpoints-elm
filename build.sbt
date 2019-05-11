@@ -6,6 +6,12 @@ organization := "io.scalaland"
 
 scalaVersion := "2.12.8"
 
+
+enablePlugins(BuildInfoPlugin)
+
+buildInfoKeys := Seq[BuildInfoKey](version)
+buildInfoPackage := "io.scalaland.endpoints.elm"
+
 val versions = new {
   val endpoints = "0.9.0"
   val utest = "0.6.7"
