@@ -41,6 +41,7 @@ setValue : Int -> Counter -> Counter
 setValue newValue counter =
   { counter | value = newValue }
 
+
 updateValue : (Int -> Int) -> Counter -> Counter
 updateValue f counter =
   { counter | value = f counter.value }

@@ -4,7 +4,17 @@ sealed trait ElmType { def name: String }
 
 sealed abstract class BasicType(val name: String) extends ElmType
 
-case class CustomBasicType(override val name: String) extends BasicType(name)
+object CustomBasicType {
+  def apply(name: String): CustomBasicType =
+    CustomBasicType(name, s"$name.init", s"$name.encoder", s"$name.decoder", s"$name.toString")
+}
+
+case class CustomBasicType(override val name: String,
+                           initExpr: String,
+                           encoderExpr: String,
+                           decoderExpr: String,
+                           toStringExpr: String)
+    extends BasicType(name)
 
 object BasicType {
   object Unit extends BasicType("()")
@@ -46,6 +56,8 @@ object ElmType {
   }
 
   def referencesShallow(elmType: ElmType): Seq[ElmType] = elmType match {
+    case cbt: CustomBasicType =>
+      Seq(cbt)
     case BasicType.Uuid =>
       Seq(BasicType.Uuid)
     case _: BasicType =>

@@ -10,6 +10,7 @@ module Request.Counter exposing (..)
 import Http
 import HttpBuilder exposing (RequestBuilder)
 import Json.Decode as Decode
+import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
 
@@ -30,4 +31,3 @@ incrementPost increment =
     |> HttpBuilder.withJsonBody (Data.Increment.encoder  increment)
     |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
     |> HttpBuilder.withTimeout 30000
-

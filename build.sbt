@@ -14,7 +14,6 @@ val versions = new {
 libraryDependencies ++= Seq(
   "org.julienrf" %% "endpoints-algebra" % versions.endpoints % "provided",
   "org.julienrf" %% "endpoints-algebra-json-schema" % versions.endpoints % "provided",
-  "org.julienrf" %% "endpoints-json-schema-generic" % versions.endpoints % "provided",
   "com.lihaoyi" %% "utest" % versions.utest % "test",
   "io.scalaland" %% "endpoints-json-schema-macros" % "0.9.0" % "test"
 )

@@ -10,6 +10,7 @@ module Request.BasicType exposing (..)
 import Http
 import HttpBuilder exposing (RequestBuilder)
 import Json.Decode as Decode
+import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
 

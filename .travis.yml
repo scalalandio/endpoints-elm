@@ -16,6 +16,7 @@ cache:
   directories:
     - $HOME/.ivy2/cache
     - $HOME/.sbt/boot
+    - $HOME/.elm
 
 before_install:
   - unset _JAVA_OPTIONS
@@ -26,8 +27,14 @@ before_cache:
   - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
   - find $HOME/.sbt -name "*.lock" -delete
 
+before_script:
+  - npm i -g npm
+  - cd elm-out && npm install && cd ..
+
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean scalafmtCheck test:scalafmtCheck compile test coverage coverageReport
+  - sbt "test:run io.scalaland.endpoints.elm.CodeEmitTest ./elm-out/src/"
+  - cd elm-out && ./node_modules/.bin/elm make $(find src -type f) && cd ..
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)

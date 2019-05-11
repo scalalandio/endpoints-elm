@@ -5,7 +5,7 @@
   See https://github.com/scalalandio/endpoints-elm for more information.
 -}
 
-module Data.ID exposing (..)
+module Data.UuidCase exposing (..)
 
 import Random exposing (..)
 import Uuid exposing (..)
@@ -14,44 +14,47 @@ import Json.Decode.Pipeline exposing (optional, required)
 import Json.Encode as Encode
 
 
-type alias ID = 
+type alias UuidCase = 
   { value : Uuid
   , msg : String
   }
 
-init : ID
+init : UuidCase
 init = 
   { value = Tuple.first <| step Uuid.uuidGenerator (initialSeed 0)
   , msg = ""
   }
 
-decoder : Decoder ID
-decoder = Decode.succeed ID
+decoder : Decoder UuidCase
+decoder = Decode.succeed UuidCase
   |> required "value" Uuid.decoder 
   |> required "msg" Decode.string 
 
-encoder : ID -> Encode.Value
+encoder : UuidCase -> Encode.Value
 encoder model = Encode.object (fieldsEncoder model)
 
-encoderTagged : (String, String) -> ID -> Encode.Value
+encoderTagged : (String, String) -> UuidCase -> Encode.Value
 encoderTagged (discriminator, tag) model = Encode.object ((discriminator, Encode.string tag) :: fieldsEncoder model)
 
-fieldsEncoder : ID -> List (String, Encode.Value)
+fieldsEncoder : UuidCase -> List (String, Encode.Value)
 fieldsEncoder model = 
   [ ( "value", Uuid.encode model.value )
   , ( "msg", Encode.string model.msg )
   ]
 
-setValue : Uuid -> ID -> ID
-setValue newValue iD =
-  { iD | value = newValue }
-setMsg : String -> ID -> ID
-setMsg newMsg iD =
-  { iD | msg = newMsg }
+setValue : Uuid -> UuidCase -> UuidCase
+setValue newValue uuidCase =
+  { uuidCase | value = newValue }
 
-updateValue : (Uuid -> Uuid) -> ID -> ID
-updateValue f iD =
-  { iD | value = f iD.value }
-updateMsg : (String -> String) -> ID -> ID
-updateMsg f iD =
-  { iD | msg = f iD.msg }
+setMsg : String -> UuidCase -> UuidCase
+setMsg newMsg uuidCase =
+  { uuidCase | msg = newMsg }
+
+
+updateValue : (Uuid -> Uuid) -> UuidCase -> UuidCase
+updateValue f uuidCase =
+  { uuidCase | value = f uuidCase.value }
+
+updateMsg : (String -> String) -> UuidCase -> UuidCase
+updateMsg f uuidCase =
+  { uuidCase | msg = f uuidCase.msg }
