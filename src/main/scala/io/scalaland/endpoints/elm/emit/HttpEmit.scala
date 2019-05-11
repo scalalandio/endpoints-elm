@@ -171,9 +171,7 @@ object HttpEmit {
   }
 
   def endpointReferencedTypes(endpoint: ElmEndpoint): Seq[ElmType] = {
-    val segmentTpes = endpoint.request.url.segments
-      .collect { case VariableSegment(_, tpe) => tpe }
-      .distinct
+    val segmentTpes = endpoint.request.url.segments.collect { case VariableSegment(_, tpe) => tpe }.distinct
     val queryParamTpes = endpoint.request.url.queryParams.map(_._2).distinct
     segmentTpes ++ queryParamTpes :+ endpoint.request.entity :+ endpoint.response
   }

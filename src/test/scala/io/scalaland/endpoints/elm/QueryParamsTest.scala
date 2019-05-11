@@ -10,76 +10,38 @@ object QueryParamsTest extends CodegenTest {
 
   import endpoints.algebra
 
-  trait TestEndpoints
-    extends algebra.Endpoints
-      with algebra.JsonSchemaEntities
-      with algebra.JsonSchemas {
+  trait TestEndpoints extends algebra.Endpoints with algebra.JsonSchemaEntities with algebra.JsonSchemas {
 
     implicit def dateQueryStringParam: QueryStringParam[LocalDate]
 
     def stringEndpoint: Endpoint[String, Unit] =
-      endpoint(
-        get(path / "string" /? qs[String]("string")),
-        emptyResponse(),
-        tags = List("QueryParams")
-      )
+      endpoint(get(path / "string" /? qs[String]("string")), emptyResponse(), tags = List("QueryParams"))
 
     def intEndpoint: Endpoint[Int, Unit] =
-      endpoint(
-        get(path / "int" /? qs[Int]("int")),
-        emptyResponse(),
-        tags = List("QueryParams")
-      )
+      endpoint(get(path / "int" /? qs[Int]("int")), emptyResponse(), tags = List("QueryParams"))
 
     def longEndpoint: Endpoint[Long, Unit] =
-      endpoint(
-        get(path / "long" /? qs[Long]("long")),
-        emptyResponse(),
-        tags = List("QueryParams")
-      )
+      endpoint(get(path / "long" /? qs[Long]("long")), emptyResponse(), tags = List("QueryParams"))
 
     def doubleEndpoint: Endpoint[Double, Unit] =
-      endpoint(
-        get(path / "double" /? qs[Double]("double")),
-        emptyResponse(),
-        tags = List("QueryParams")
-      )
+      endpoint(get(path / "double" /? qs[Double]("double")), emptyResponse(), tags = List("QueryParams"))
 
     def booleanEndpoint: Endpoint[Boolean, Unit] =
-      endpoint(
-        get(path / "bool" /? qs[Boolean]("bool")),
-        emptyResponse(),
-        tags = List("QueryParams")
-      )
+      endpoint(get(path / "bool" /? qs[Boolean]("bool")), emptyResponse(), tags = List("QueryParams"))
 
     def uuidEndpoint: Endpoint[UUID, Unit] =
-      endpoint(
-        get(path / "uuid" /? qs[UUID]("uuid")),
-        emptyResponse(),
-        tags = List("QueryParams")
-      )
+      endpoint(get(path / "uuid" /? qs[UUID]("uuid")), emptyResponse(), tags = List("QueryParams"))
 
     def dateEndpoint: Endpoint[LocalDate, Unit] =
-      endpoint(
-        get(path / "date" /? qs[LocalDate]("date")),
-        emptyResponse(),
-        tags = List("QueryParams")
-      )
+      endpoint(get(path / "date" /? qs[LocalDate]("date")), emptyResponse(), tags = List("QueryParams"))
   }
 
   object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator {
 
     implicit def dateQueryStringParam: ElmType = CustomTypes.date
 
-    val allEndpoints: Seq[ElmEndpoint] = Seq(
-      stringEndpoint,
-      intEndpoint,
-      longEndpoint,
-      doubleEndpoint,
-      booleanEndpoint,
-      uuidEndpoint,
-      dateEndpoint
-    )
+    val allEndpoints: Seq[ElmEndpoint] =
+      Seq(stringEndpoint, intEndpoint, longEndpoint, doubleEndpoint, booleanEndpoint, uuidEndpoint, dateEndpoint)
   }
 
   val tests = Tests {
@@ -87,9 +49,7 @@ object QueryParamsTest extends CodegenTest {
 
     "support query parameters" - {
 
-      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("query-params-test")(
-        "Request/QueryParams.elm"
-      )
+      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("query-params-test")("Request/QueryParams.elm")
     }
   }
 }

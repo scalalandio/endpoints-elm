@@ -11,101 +11,46 @@ object RequestsTest extends CodegenTest {
 
   import endpoints.algebra
 
-  trait TestEndpoints
-    extends algebra.Endpoints
-      with algebra.JsonSchemaEntities
-      with fixtures.JsonSchemas {
+  trait TestEndpoints extends algebra.Endpoints with algebra.JsonSchemaEntities with fixtures.JsonSchemas {
 
     def textEndpoint: Endpoint[String, Unit] =
-      endpoint(
-        post(path / "text", textRequest()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "text", textRequest()), emptyResponse(), tags = List("Requests"))
 
     def stringEndpoint: Endpoint[String, Unit] =
-      endpoint(
-        post(path / "json-string", jsonRequest[String]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-string", jsonRequest[String]()), emptyResponse(), tags = List("Requests"))
 
     def intEndpoint: Endpoint[Int, Unit] =
-      endpoint(
-        post(path / "json-int", jsonRequest[Int]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-int", jsonRequest[Int]()), emptyResponse(), tags = List("Requests"))
 
     def longEndpoint: Endpoint[Long, Unit] =
-      endpoint(
-        post(path / "json-long", jsonRequest[Long]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-long", jsonRequest[Long]()), emptyResponse(), tags = List("Requests"))
 
     def floatEndpoint: Endpoint[Float, Unit] =
-      endpoint(
-        post(path / "json-float", jsonRequest[Float]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-float", jsonRequest[Float]()), emptyResponse(), tags = List("Requests"))
 
     def doubleEndpoint: Endpoint[Double, Unit] =
-      endpoint(
-        post(path / "json-double", jsonRequest[Double]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-double", jsonRequest[Double]()), emptyResponse(), tags = List("Requests"))
 
     def booleanEndpoint: Endpoint[Boolean, Unit] =
-      endpoint(
-        post(path / "json-boolean", jsonRequest[Boolean]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-boolean", jsonRequest[Boolean]()), emptyResponse(), tags = List("Requests"))
 
     def uuidEndpoint: Endpoint[UUID, Unit] =
-      endpoint(
-        post(path / "json-uuid", jsonRequest[UUID]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-uuid", jsonRequest[UUID]()), emptyResponse(), tags = List("Requests"))
 
     def dateEndpoint: Endpoint[LocalDate, Unit] =
-      endpoint(
-        post(path / "json-date", jsonRequest[LocalDate]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-date", jsonRequest[LocalDate]()), emptyResponse(), tags = List("Requests"))
 
     def caseClassEndpoint: Endpoint[Foo, Unit] =
-      endpoint(
-        post(path / "json-case-class", jsonRequest[Foo]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-case-class", jsonRequest[Foo]()), emptyResponse(), tags = List("Requests"))
 
     def coproductEndpoint: Endpoint[Coproduct, Unit] =
-      endpoint(
-        post(path / "json-coproduct", jsonRequest[Coproduct]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-coproduct", jsonRequest[Coproduct]()), emptyResponse(), tags = List("Requests"))
 
     def listEndpoint: Endpoint[List[String], Unit] =
-      endpoint(
-        post(path / "json-list", jsonRequest[List[String]]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-list", jsonRequest[List[String]]()), emptyResponse(), tags = List("Requests"))
 
     def mapEndpoint: Endpoint[Map[String, Foo], Unit] =
-      endpoint(
-        post(path / "json-map", jsonRequest[Map[String, Foo]]()),
-        emptyResponse(),
-        tags = List("Requests")
-      )
+      endpoint(post(path / "json-map", jsonRequest[Map[String, Foo]]()), emptyResponse(), tags = List("Requests"))
   }
 
   object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator {
