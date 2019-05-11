@@ -144,7 +144,7 @@ object HttpEmit {
         Some(
           (
             argName,
-            elmRequest.entity.name,
+            ElmType.tpeSignature(elmRequest.entity),
             s"HttpBuilder.withJsonBody (${TypeEmit.encoderDefinition(elmRequest.entity, "", topLevel = false)} $argName)"
           )
         )

@@ -16,7 +16,7 @@ object TypeEmit {
       typeDefinition(elmType),
       "",
       s"init : ${elmType.name}",
-      s"init = ${initDefinition(elmType)}",
+      s"init =${initDefinition(elmType)}",
       "",
       s"decoder : Decoder ${elmType.name}",
       s"decoder = ${decoderDefinition(elmType)}",
@@ -37,7 +37,7 @@ object TypeEmit {
 
   def typeDefinition(elmType: ElmType): String = elmType match {
     case TypeAlias(name, fields) =>
-      s"type alias $name = " + fields
+      s"type alias $name =" + fields
         .map {
           case (nme, tpe) =>
             s"$nme : ${typeReference(tpe)}"

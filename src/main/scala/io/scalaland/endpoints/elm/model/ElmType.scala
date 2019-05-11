@@ -42,6 +42,13 @@ case class UnionType(name: String, constructors: Seq[(String, TypeAlias)], discr
 
 object ElmType {
 
+  def tpeSignature(elmType: ElmType): String = elmType match {
+    case appliedType: AppliedType =>
+      s"(${appliedType.name} ${appliedType.args.map(tpeSignature).mkString(" ")})"
+    case _ =>
+      elmType.name
+  }
+
   def referencesDeep(elmType: ElmType): Seq[ElmType] = elmType match {
     case _: BasicType =>
       Nil
