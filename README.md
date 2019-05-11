@@ -39,7 +39,7 @@ Request/HttpModule3.elm
 To get started, first add project dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "io.scalaland" %% "endpoints-elm" % "0.9.0"
+libraryDependencies += "io.scalaland" %% "endpoints-elm" % "0.9.1"
 ```
 
 ##### Endpoints definition
