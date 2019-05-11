@@ -13,6 +13,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
+import Dict exposing (Dict)
 
 import Date exposing (..)
 import Uuid exposing (..)

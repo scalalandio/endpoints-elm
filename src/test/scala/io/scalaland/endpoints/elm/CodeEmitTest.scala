@@ -9,7 +9,9 @@ object CodeEmitTest extends App with ElmCodeGenerator {
       val allEndpoints =
         CounterTest.TestElmEndpoints.allEndpoints ++
           SegmentsTest.TestElmEndpoints.allEndpoints ++
-          QueryParamsTest.TestElmEndpoints.allEndpoints
+          QueryParamsTest.TestElmEndpoints.allEndpoints ++
+          RequestsTest.TestElmEndpoints.allEndpoints ++
+          ResponsesTest.TestElmEndpoints.allEndpoints
 
       writeElmCode(outputDir)(allEndpoints: _*)()
 

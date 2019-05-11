@@ -13,12 +13,12 @@ import Json.Decode.Pipeline exposing (optional, required)
 import Json.Encode as Encode
 
 
-type alias Counter = 
+type alias Counter =
   { value : Int
   }
 
 init : Counter
-init = 
+init =
   { value = 0
   }
 

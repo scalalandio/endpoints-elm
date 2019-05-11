@@ -133,6 +133,10 @@ object RequestsTest extends CodegenTest {
 
     "support requests" - {
 
+      //      ReferenceData.save("/Users/krzemin/Projects/Scalaland/endpoints-elm/src/test/resources/requests-test")(
+      //        generateElmContents(allEndpoints: _*)()
+      //      )
+
       generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("requests-test")(
         "Data/Coproduct.elm",
         "Data/Foo.elm",

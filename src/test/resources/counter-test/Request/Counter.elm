@@ -13,6 +13,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
+import Dict exposing (Dict)
 
 import Data.Counter exposing (..)
 import Data.Increment exposing (..)

@@ -13,12 +13,12 @@ import Json.Decode.Pipeline exposing (optional, required)
 import Json.Encode as Encode
 
 
-type alias Increment = 
+type alias Increment =
   { step : Int
   }
 
 init : Increment
-init = 
+init =
   { step = 0
   }
 

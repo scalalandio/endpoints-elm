@@ -13,6 +13,7 @@ import Json.Decode as Decode
 import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
+import Dict exposing (Dict)
 
 import Date exposing (..)
 import Uuid exposing (..)
@@ -45,7 +46,7 @@ longGet long =
 doubleGet : Float -> RequestBuilder ()
 doubleGet double =
   HttpBuilder.get "/double"
-    |> HttpBuilder.withQueryParams ([("double", toString double)])
+    |> HttpBuilder.withQueryParams ([("double", String.fromFloat double)])
     |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
     |> HttpBuilder.withTimeout 30000
 

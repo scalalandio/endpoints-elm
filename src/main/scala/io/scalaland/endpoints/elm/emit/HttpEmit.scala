@@ -23,6 +23,7 @@ object HttpEmit {
        |import Json.Encode as Encode
        |import Bool.Extra
        |import Maybe.Extra
+       |import Dict exposing (Dict)
        |""".stripMargin
 
   def endpointDefinition(endpoint: ElmEndpoint)(implicit ctx: Context): Seq[String] = {
