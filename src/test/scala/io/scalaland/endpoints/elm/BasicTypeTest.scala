@@ -83,9 +83,12 @@ object BasicTypeTest extends CodegenTest {
           tags = List("BasicType")
         )
 
-      def uuidEndpoint: Endpoint[(UUID, UUID), UUID] =
+      def uuidEndpoint: Endpoint[(UUID, UUID, UUID), UUID] =
         endpoint(
-          get(path / "UuidEcho" / segment[UUID]("uuid1") /? qs[UUID]("uuid2")),
+          post(
+            path / "UuidEcho" / segment[UUID]("uuid1") /? qs[UUID]("uuid2"),
+            jsonRequest[UUID]()
+          ),
           jsonResponse[UUID](docs = Some("UUID echo")),
           tags = List("BasicType")
         )
@@ -95,9 +98,12 @@ object BasicTypeTest extends CodegenTest {
       implicit def dateSegment: Segment[LocalDate]
       implicit def dateQueryStringParam: QueryStringParam[LocalDate]
 
-      def localDateEndpoint: Endpoint[(LocalDate, LocalDate), LocalDate] =
+      def localDateEndpoint: Endpoint[(LocalDate, LocalDate, LocalDate), LocalDate] =
         endpoint(
-          get(path / "LocalDateEcho" / segment[LocalDate]("date1") /? qs[LocalDate]("date2")),
+          post(
+            path / "LocalDateEcho" / segment[LocalDate]("date1") /? qs[LocalDate]("date2"),
+            jsonRequest[LocalDate]()
+          ),
           jsonResponse[LocalDate](docs = Some("LocalDate echo")),
           tags = List("CustomBasicType")
         )

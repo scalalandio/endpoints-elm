@@ -72,9 +72,10 @@ booleanechoPost bool =
     |> HttpBuilder.withTimeout 30000
 
 
-uuidechoUuid1Get : Uuid -> Uuid -> RequestBuilder Uuid
-uuidechoUuid1Get uuid1 uuid2 =
-  HttpBuilder.get ("/UuidEcho/" ++ Uuid.toString uuid1)
+uuidechoUuid1Post : Uuid -> Uuid -> Uuid -> RequestBuilder Uuid
+uuidechoUuid1Post uuid1 uuid2 uuid =
+  HttpBuilder.post ("/UuidEcho/" ++ Uuid.toString uuid1)
     |> HttpBuilder.withQueryParams ([("uuid2", Uuid.toString uuid2)])
+    |> HttpBuilder.withJsonBody (Uuid.encode  uuid)
     |> HttpBuilder.withExpectJson Uuid.decoder
     |> HttpBuilder.withTimeout 30000
