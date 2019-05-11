@@ -5,7 +5,7 @@ import utest._
 
 import scala.reflect.ClassTag
 
-object BasicTest extends CodegenTest {
+object CounterTest extends CodegenTest {
 
   object Domain {
 
@@ -55,7 +55,7 @@ object BasicTest extends CodegenTest {
 
     "generate code for simple domain model" - {
 
-      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("basic-test")(
+      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("counter-test")(
         "Data/Counter.elm",
         "Data/Increment.elm",
         "Request/Counter.elm"

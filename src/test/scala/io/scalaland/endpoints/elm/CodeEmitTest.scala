@@ -7,7 +7,7 @@ object CodeEmitTest extends App with ElmCodeGenerator {
       println(s"Generating code to $outputDir...")
 
       val allEndpoints =
-        BasicTest.Domain.TestElmEndpoints.allEndpoints ++
+        CounterTest.Domain.TestElmEndpoints.allEndpoints ++
           BasicTypeTest.Domain.TestElmEndpoints.allEndpoints
 
       writeElmCode(outputDir)(allEndpoints: _*)()
