@@ -116,6 +116,7 @@ object HttpEmit {
     case BasicType.String     => None
     case BasicType.Bool       => Some("(String.toLower << Bool.Extra.toString)")
     case BasicType.Int        => Some("String.fromInt")
+    case BasicType.Float      => Some("String.fromFloat")
     case cbt: CustomBasicType => Some(cbt.toStringExpr)
     case _                    => Some("toString")
   }
@@ -169,10 +170,11 @@ object HttpEmit {
   }
 
   def endpointReferencedTypes(endpoint: ElmEndpoint): Seq[ElmType] = {
-    val urlArgTpes = endpoint.request.url.segments.collect {
-      case VariableSegment(_, tpe) => tpe
-    }
-    urlArgTpes :+ endpoint.request.entity :+ endpoint.response
+    val segmentTpes = endpoint.request.url.segments
+      .collect { case VariableSegment(_, tpe) => tpe }
+      .distinct
+    val queryParamTpes = endpoint.request.url.queryParams.map(_._2).distinct
+    segmentTpes ++ queryParamTpes :+ endpoint.request.entity :+ endpoint.response
   }
 
   def documentationString(endpoint: ElmEndpoint): String = {
