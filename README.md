@@ -260,12 +260,15 @@ You need to have installed following packages:
 "Chadtech/elm-bool-extra": "2.4.0"
 "NoRedInk/elm-json-decode-pipeline": "1.0.0"
 "elm/core": "1.0.2"
-"elm/http": "1.0.0"
+"elm/http": "2.0.0"
 "elm/json": "1.1.3"
 "elm-community/maybe-extra": "5.0.0",
 "elm/url": "1.0.0",
-"lukewestby/elm-http-builder": "6.0.0"
+"elm/bytes": "1.0.8",
+"lukewestby/elm-http-builder": "7.0.0"
 ```
+
+For `elm/http 1.0.0` and `lukewestby/elm-http-builder 6.0.0`, check out version `0.9.1` of this library.
 
 See also example`out/elm.json`.
 

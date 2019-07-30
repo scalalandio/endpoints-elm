@@ -56,3 +56,4 @@ sealed trait ElmEntityEncoding
 case object NoEntity extends ElmEntityEncoding
 case object StringEncoding extends ElmEntityEncoding
 case object JsonEncoding extends ElmEntityEncoding
+case class BinaryEncoding(contentType: String) extends ElmEntityEncoding

@@ -19,11 +19,12 @@ object HttpEmit {
 
   private val httpImports =
     s"""import Http
-       |import HttpBuilder exposing (RequestBuilder)
+       |import HttpBuilder.Task exposing (RequestBuilder)
        |import Json.Decode as Decode
        |import Json.Encode as Encode
        |import Bool.Extra
        |import Maybe.Extra
+       |import Bytes exposing (Bytes)
        |import Dict exposing (Dict)
        |""".stripMargin
 
@@ -47,28 +48,28 @@ object HttpEmit {
 
     val argNames = segmentArgs ++ qpArgs ++ bodyArgs ++ headerArgs
     val argTypesStr = segmentTpes ++ qpTpes ++ bodyTypesStr ++ headerTpes
-    val retTpeStr = s"RequestBuilder ${TypeEmit.typeReference(endpoint.response, topLevel = false)}"
+    val retTpeStr = s"RequestBuilder Http.Error ${TypeEmit.typeReference(endpoint.response, topLevel = false)}"
 
     val withHeaderModifiers = endpoint.request.headers.map { header =>
-      s"""HttpBuilder.withHeader "${header.name}" ${header.normalizedName}"""
+      s"""HttpBuilder.Task.withHeader "${header.name}" ${header.normalizedName}"""
     }
 
-    val withCredentialsModifier = if (ctx.withCredentials) List("HttpBuilder.withCredentials") else List.empty[String]
+    val withCredentialsModifier = if (ctx.withCredentials) List("HttpBuilder.Task.withCredentials") else List.empty[String]
 
     val withModifiers =
       withBodyModifier ++
         withCredentialsModifier ++
         withHeaderModifiers :+
         responseExpect(endpoint) :+
-        "HttpBuilder.withTimeout 30000"
+        "HttpBuilder.Task.withTimeout 30000"
 
     val urlExpr = s"(Request.Url.$moduleName.${endpoint.name} ${(segmentArgs ++ qpArgs).mkString(" ")})"
 
     List(
       Commons.documentationString(endpoint),
-      s"${endpoint.name} : ${(argTypesStr :+ retTpeStr).mkString(" -> ")}",
-      s"${endpoint.name} ${argNames.mkString(" ")} =",
-      s"""  HttpBuilder.${endpoint.request.method} $urlExpr""".stripMargin,
+      s"${endpoint.name} : ${(argTypesStr :+ resolverTpe(endpoint) :+ retTpeStr).mkString(" -> ")}",
+      s"${endpoint.name} ${argNames.mkString(" ")} $resolverValName =",
+      s"""  HttpBuilder.Task.${endpoint.request.method} $urlExpr""".stripMargin,
       withModifiers.mkString("    |> ", "\n    |> ", ""),
       ""
     )
@@ -79,14 +80,22 @@ object HttpEmit {
       case NoEntity =>
         None
       case StringEncoding =>
-        Some(("body", "String", """HttpBuilder.withStringBody "text/plain" body"""))
+        Some(("body", "String", """HttpBuilder.Task.withBody (Http.stringBody "text/plain" body)"""))
       case JsonEncoding =>
         val argName = NameUtils.identFromTypeName(elmRequest.entity)
         Some(
           (
             argName,
             ElmType.tpeSignature(elmRequest.entity),
-            s"HttpBuilder.withJsonBody (${TypeEmit.encoderDefinition(elmRequest.entity, "", topLevel = false)} $argName)"
+            s"HttpBuilder.Task.withBody (Http.jsonBody (${TypeEmit.encoderDefinition(elmRequest.entity, "", topLevel = false)} $argName))"
+          )
+        )
+      case BinaryEncoding(contentType) =>
+        Some(
+          (
+            "bytes",
+            "Bytes",
+            s"""HttpBuilder.Task.withBody (Http.bytesBody "$contentType" bytes)""".stripMargin
           )
         )
     }
@@ -95,12 +104,26 @@ object HttpEmit {
   def responseExpect(elmEndpoint: ElmEndpoint): String = {
     elmEndpoint.responseEncoding match {
       case NoEntity =>
-        "HttpBuilder.withExpect (Http.expectStringResponse (\\_ -> Ok ()))"
+        s"HttpBuilder.Task.withResolver (Http.stringResolver ($resolverValName >> Result.map (\\_ -> ())))"
       case StringEncoding =>
-        "HttpBuilder.withExpectString"
+        s"HttpBuilder.Task.withResolver (Http.stringResolver $resolverValName)"
       case JsonEncoding =>
-        s"HttpBuilder.withExpectJson ${TypeEmit.decoderDefinition(elmEndpoint.response, topLevel = false)}"
+        val jsonDecoder = TypeEmit.decoderDefinition(elmEndpoint.response, topLevel = false)
+        val jsonResolver = s"$resolverValName >> Result.andThen (Decode.decodeString $jsonDecoder >> Result.mapError (Decode.errorToString >> Http.BadBody))"
+        s"HttpBuilder.Task.withResolver (Http.stringResolver ($jsonResolver))"
+      case BinaryEncoding(_) =>
+        s"HttpBuilder.Task.withResolver (Http.bytesResolver $resolverValName)"
     }
+  }
+
+  def resolverTpe(endpoint: ElmEndpoint): String = {
+    val responseTpe = endpoint.responseEncoding match {
+      case BinaryEncoding(_) =>
+        "Bytes"
+      case _ =>
+        "String"
+    }
+    s"(Http.Response $responseTpe -> Result Http.Error $responseTpe)"
   }
 
   def imports(module: ElmHttpModule): Seq[String] = {
@@ -115,4 +138,6 @@ object HttpEmit {
     val queryParamTpes = endpoint.request.url.queryParams.map(_._2).distinct
     segmentTpes ++ queryParamTpes :+ endpoint.request.entity :+ endpoint.response
   }
+
+  private val resolverValName = "resolver__"
 }
