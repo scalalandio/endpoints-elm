@@ -50,6 +50,7 @@ object CounterTest extends CodegenTest {
       generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("counter-test")(
         "Data/Counter.elm",
         "Data/Increment.elm",
+        "Request/Url/Counter.elm",
         "Request/Counter.elm"
       )
     }

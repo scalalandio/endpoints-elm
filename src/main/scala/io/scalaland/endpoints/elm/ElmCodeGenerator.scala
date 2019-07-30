@@ -2,7 +2,7 @@ package io.scalaland.endpoints.elm
 
 import java.io.File
 
-import io.scalaland.endpoints.elm.emit.{FileUtils, HttpEmit, NameUtils, TypeEmit}
+import io.scalaland.endpoints.elm.emit._
 import io.scalaland.endpoints.elm.model._
 
 trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchemas {
@@ -35,7 +35,11 @@ trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchema
       new File(s"Request/${httpModule.name}.elm") -> HttpEmit.moduleDefinition(httpModule)(emitCtx)
     }
 
-    typeFiles ++ httpFiles
+    val urlFiles = groupEndpointsIntoModules(endpoints).map { httpModule =>
+      new File(s"Request/Url/${httpModule.name}.elm") -> UrlEmit.moduleDefinition(httpModule)(emitCtx)
+    }
+
+    typeFiles ++ httpFiles ++ urlFiles
   }
 
   private def captureEndpointsTypes(endpoints: Seq[ElmEndpoint]): Seq[ElmType] = {

@@ -33,7 +33,7 @@ before_script:
 
 script:
   - sbt ++$TRAVIS_SCALA_VERSION clean scalafmtCheck test:scalafmtCheck compile test coverage coverageReport
-  - sbt "test:run io.scalaland.endpoints.elm.CodeEmitTest ./elm-out/src/"
+  - sbt "test:run ./elm-out/src/"
   - cd elm-out && ./node_modules/.bin/elm make $(find src -type f) && cd ..
 
 after_success:
