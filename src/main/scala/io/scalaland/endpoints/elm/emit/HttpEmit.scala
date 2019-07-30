@@ -56,7 +56,7 @@ object HttpEmit {
     val withCredentialsModifier = if (ctx.withCredentials) List("HttpBuilder.withCredentials") else List.empty[String]
 
     val withModifiers =
-        withBodyModifier ++
+      withBodyModifier ++
         withCredentialsModifier ++
         withHeaderModifiers :+
         responseExpect(endpoint) :+

@@ -41,7 +41,7 @@ object UrlEmit {
   }
 
   def urlStringLiteral(urlPrefix: String)(elmUrl: ElmUrl): String = {
-    val prefix = if(urlPrefix.isEmpty) "/" else urlPrefix
+    val prefix = if (urlPrefix.isEmpty) "/" else urlPrefix
     List(
       "  Url.Builder.relative",
       s"""    ["$prefix"${urlSegmentExprs(elmUrl).mkString(", ", ", ", "")}]""",
@@ -54,7 +54,8 @@ object UrlEmit {
       case StaticSegment(part) if part.nonEmpty =>
         "\"" + part + "\""
       case VariableSegment(name, tpe) =>
-        Commons.toStringFunctionExpr(tpe)
+        Commons
+          .toStringFunctionExpr(tpe)
           .map(toString => s"$toString $name")
           .getOrElse(name)
     }
@@ -64,18 +65,24 @@ object UrlEmit {
     val paramsExprs = elmUrl.queryParams
       .map { case (qpName, qpTpe) => toQueryParamsListElems(qpName, qpTpe) }
 
-    if(paramsExprs.nonEmpty) paramsExprs else Seq("[]")
+    if (paramsExprs.nonEmpty) paramsExprs else Seq("[]")
   }
 
   def toQueryParamsListElems(queryParamName: String, elmType: ElmType): String = elmType match {
     case AppliedType.Maybe(tpe) =>
-      s"""($queryParamName |> Maybe.map (\\p -> Url.Builder.string "$queryParamName" (${Commons.toStringFunctionExpr(tpe).getOrElse("")} p)) |> Maybe.Extra.toList)"""
+      s"""($queryParamName |> Maybe.map (\\p -> Url.Builder.string "$queryParamName" (${Commons
+        .toStringFunctionExpr(tpe)
+        .getOrElse("")} p)) |> Maybe.Extra.toList)"""
     case AppliedType.List(tpe) =>
-      s"""($queryParamName |> List.map (\\p -> Url.Builder.string "$queryParamName" (${Commons.toStringFunctionExpr(tpe).getOrElse("")} p)))""".stripMargin
+      s"""($queryParamName |> List.map (\\p -> Url.Builder.string "$queryParamName" (${Commons
+           .toStringFunctionExpr(tpe)
+           .getOrElse("")} p)))""".stripMargin
     case BasicType.Int =>
       s"""[Url.Builder.int "$queryParamName" $queryParamName]"""
     case _: BasicType =>
-      s"""[Url.Builder.string "$queryParamName" (${Commons.toStringFunctionExpr(elmType).getOrElse("")} $queryParamName)]""".stripMargin
+      s"""[Url.Builder.string "$queryParamName" (${Commons
+           .toStringFunctionExpr(elmType)
+           .getOrElse("")} $queryParamName)]""".stripMargin
     case _ =>
       s"[{- unsupported query params type in elm codegen: $elmType -}]"
   }
