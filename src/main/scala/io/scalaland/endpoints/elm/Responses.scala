@@ -14,6 +14,7 @@ trait Responses extends algebra.Responses {
   def textResponse(docs: Documentation): (ElmEntityEncoding, ElmType) =
     (StringEncoding, BasicType.String)
 
+  // TODO: try to model with encoded type so that return type is lifted, as in Scala client interpreters
   def wheneverFound[A](response: (ElmEntityEncoding, ElmType),
                        notFoundDocs: Documentation): (ElmEntityEncoding, ElmType) =
     response

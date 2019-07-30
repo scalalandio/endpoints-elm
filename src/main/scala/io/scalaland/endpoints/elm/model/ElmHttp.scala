@@ -52,6 +52,12 @@ sealed trait ElmHeader {
 case class RequiredHeader(name: String) extends ElmHeader
 case class OptionalHeader(name: String) extends ElmHeader
 
+
+// TODO: consider alternative: EncodedType; only JsonEncodedType would be parameterized by ElmType
+// TODO: consider also adding ability to plug in own, custom response resolver
+// TODO: encoded type should have resolver assigned; consider in the example of wheneverFound -> by composing resolver we should be able also to lift retuned type to (Maybe X), where X is underlying response type
+
+
 sealed trait ElmEntityEncoding
 case object NoEntity extends ElmEntityEncoding
 case object StringEncoding extends ElmEntityEncoding

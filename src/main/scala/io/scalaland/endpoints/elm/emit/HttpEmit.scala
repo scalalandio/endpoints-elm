@@ -50,6 +50,7 @@ object HttpEmit {
     val argTypesStr = segmentTpes ++ qpTpes ++ bodyTypesStr ++ headerTpes
     val retTpeStr = s"RequestBuilder Http.Error ${TypeEmit.typeReference(endpoint.response, topLevel = false)}"
 
+    // TODO: add some tests to test headers
     val withHeaderModifiers = endpoint.request.headers.map { header =>
       s"""HttpBuilder.Task.withHeader "${header.name}" ${header.normalizedName}"""
     }
