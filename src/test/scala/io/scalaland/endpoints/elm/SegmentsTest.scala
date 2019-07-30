@@ -42,8 +42,10 @@ object SegmentsTest extends CodegenTest {
 
     "support segments" - {
 
-      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("segments-test")("Request/Segments.elm")
+      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("segments-test")(
+        "Request/Url/Segments.elm",
+        "Request/Segments.elm"
+      )
     }
   }
-
 }

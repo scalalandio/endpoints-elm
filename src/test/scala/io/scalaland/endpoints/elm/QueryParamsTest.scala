@@ -74,7 +74,10 @@ object QueryParamsTest extends CodegenTest {
 
     "support query parameters" - {
 
-      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("query-params-test")("Request/QueryParams.elm")
+      generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("query-params-test")(
+        "Request/Url/QueryParams.elm",
+        "Request/QueryParams.elm"
+      )
     }
   }
 }

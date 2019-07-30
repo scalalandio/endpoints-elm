@@ -83,6 +83,7 @@ object RequestsTest extends CodegenTest {
         "Data/Foo.elm",
         "Data/Inst1.elm",
         "Data/Inst2.elm",
+        "Request/Url/Requests.elm",
         "Request/Requests.elm"
       )
     }
