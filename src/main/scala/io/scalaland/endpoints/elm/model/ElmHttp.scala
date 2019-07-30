@@ -1,6 +1,6 @@
 package io.scalaland.endpoints.elm.model
 
-import io.scalaland.endpoints.elm.emit.NameUtils
+import io.scalaland.endpoints.elm.emit.{NameUtils, TypeEmit}
 
 case class ElmEndpoint(name: String,
                        request: ElmRequest,
@@ -25,7 +25,20 @@ case class ElmRequest(method: String,
   }
 }
 
-case class ElmUrl(segments: List[ElmUrlSegment], queryParams: List[(String, ElmType)])
+case class ElmUrl(segments: List[ElmUrlSegment], queryParams: List[(String, ElmType)]) {
+
+  def segmentTpes: List[(String, String)] = {
+    segments.collect {
+      case VariableSegment(nme, tpe) => nme -> TypeEmit.typeReference(tpe, topLevel = false)
+    }
+  }
+
+  def queryParamTpes: List[(String, String)] = {
+    queryParams.map {
+      case (arg, tpe) => arg -> TypeEmit.typeReference(tpe, topLevel = false)
+    }
+  }
+}
 
 sealed trait ElmUrlSegment
 case class StaticSegment(segment: String) extends ElmUrlSegment

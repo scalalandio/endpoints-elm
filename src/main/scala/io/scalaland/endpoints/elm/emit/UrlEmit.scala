@@ -25,16 +25,11 @@ object UrlEmit {
 
   def urlDefinition(endpoint: ElmEndpoint)(implicit ctx: Context): Seq[String] = {
 
-    val (qpArgs, qpTpes) = endpoint.request.url.queryParams.map {
-      case (arg, tpe) => arg -> TypeEmit.typeReference(tpe, topLevel = false)
-    }.unzip
+    val (segmentArgs, segmentTpes) = endpoint.request.url.segmentTpes.unzip
+    val (qpArgs, qpTpes) = endpoint.request.url.queryParamTpes.unzip
 
-    val (urlArgs, urlTpes) = endpoint.request.url.segments.collect {
-      case VariableSegment(nme, tpe) => nme -> TypeEmit.typeReference(tpe, topLevel = false)
-    }.unzip
-
-    val argNames = urlArgs ++ qpArgs
-    val argTypesStr = urlTpes ++ qpTpes
+    val argNames = segmentArgs ++ qpArgs
+    val argTypesStr = segmentTpes ++ qpTpes
 
     List(
       Commons.documentationString(endpoint),
@@ -46,9 +41,7 @@ object UrlEmit {
   }
 
   def urlStringLiteral(urlPrefix: String)(elmUrl: ElmUrl): String = {
-
     val prefix = if(urlPrefix.isEmpty) "/" else urlPrefix
-
     List(
       "  Url.Builder.relative",
       s"""    ["$prefix"${urlSegmentExprs(elmUrl).mkString(", ", ", ", "")}]""",
@@ -74,7 +67,6 @@ object UrlEmit {
     if(paramsExprs.nonEmpty) paramsExprs else Seq("[]")
   }
 
-
   def toQueryParamsListElems(queryParamName: String, elmType: ElmType): String = elmType match {
     case AppliedType.Maybe(tpe) =>
       s"""($queryParamName |> Maybe.map (\\p -> Url.Builder.string "$queryParamName" (${Commons.toStringFunctionExpr(tpe).getOrElse("")} p)) |> Maybe.Extra.toList)"""
@@ -88,18 +80,16 @@ object UrlEmit {
       s"[{- unsupported query params type in elm codegen: $elmType -}]"
   }
 
-
   def imports(module: ElmHttpModule): Seq[String] = {
     module.endpoints
-      .flatMap(urlReferencedTypes)
+      .flatMap(endpointReferencedTypes)
       .flatMap(ElmType.referencesShallow)
       .map(TypeEmit.importModuleName)
   }
 
-  def urlReferencedTypes(endpoint: ElmEndpoint): Seq[ElmType] = {
+  def endpointReferencedTypes(endpoint: ElmEndpoint): Seq[ElmType] = {
     val segmentTpes = endpoint.request.url.segments.collect { case VariableSegment(_, tpe) => tpe }.distinct
     val queryParamTpes = endpoint.request.url.queryParams.map(_._2).distinct
     segmentTpes ++ queryParamTpes
   }
-
 }

@@ -13,7 +13,7 @@ object HttpEmit {
       httpImports,
       imports(module).distinct.sorted.map(i => s"import $i exposing (..)").mkString("\n"),
       "",
-    ) ++ module.endpoints.flatMap(endpointDefinition))
+    ) ++ module.endpoints.flatMap(endpointDefinition(module.name)))
       .mkString("\n")
   }
 
@@ -27,15 +27,10 @@ object HttpEmit {
        |import Dict exposing (Dict)
        |""".stripMargin
 
-  def endpointDefinition(endpoint: ElmEndpoint)(implicit ctx: Context): Seq[String] = {
+  def endpointDefinition(moduleName: String)(endpoint: ElmEndpoint)(implicit ctx: Context): Seq[String] = {
 
-    val (qpArgs, qpTpes) = endpoint.request.url.queryParams.map {
-      case (arg, tpe) => arg -> TypeEmit.typeReference(tpe, topLevel = false)
-    }.unzip
-
-    val (urlArgs, urlTpes) = endpoint.request.url.segments.collect {
-      case VariableSegment(nme, tpe) => nme -> TypeEmit.typeReference(tpe, topLevel = false)
-    }.unzip
+    val (segmentArgs, segmentTpes) = endpoint.request.url.segmentTpes.unzip
+    val (qpArgs, qpTpes) = endpoint.request.url.queryParamTpes.unzip
 
     val headerArgs = endpoint.request.headers.map(_.normalizedName)
     val headerTpes = endpoint.request.headers.map {
@@ -50,22 +45,9 @@ object HttpEmit {
         (Nil, Nil, Nil)
     }
 
-    val argNames = urlArgs ++ qpArgs ++ bodyArgs ++ headerArgs
-
-    val argTypesStr = urlTpes ++ qpTpes ++ bodyTypesStr ++ headerTpes
+    val argNames = segmentArgs ++ qpArgs ++ bodyArgs ++ headerArgs
+    val argTypesStr = segmentTpes ++ qpTpes ++ bodyTypesStr ++ headerTpes
     val retTpeStr = s"RequestBuilder ${TypeEmit.typeReference(endpoint.response, topLevel = false)}"
-
-    val withQueryParamsModifier = if (endpoint.request.url.queryParams.isEmpty) {
-      Nil
-    } else {
-
-      val elmQueryParamsList = endpoint.request.url.queryParams.map {
-        case (qpArgName, qpTpe) =>
-          toQueryParamsListElems(qpArgName, qpTpe)
-      }
-
-      List(s"""HttpBuilder.withQueryParams ${elmQueryParamsList.mkString("(", " ++ ", ")")}""")
-    }
 
     val withHeaderModifiers = endpoint.request.headers.map { header =>
       s"""HttpBuilder.withHeader "${header.name}" ${header.normalizedName}"""
@@ -74,55 +56,22 @@ object HttpEmit {
     val withCredentialsModifier = if (ctx.withCredentials) List("HttpBuilder.withCredentials") else List.empty[String]
 
     val withModifiers =
-      withQueryParamsModifier ++
         withBodyModifier ++
         withCredentialsModifier ++
         withHeaderModifiers :+
         responseExpect(endpoint) :+
         "HttpBuilder.withTimeout 30000"
 
+    val urlExpr = s"(Request.Url.$moduleName.${endpoint.name} ${(segmentArgs ++ qpArgs).mkString(" ")})"
+
     List(
       Commons.documentationString(endpoint),
       s"${endpoint.name} : ${(argTypesStr :+ retTpeStr).mkString(" -> ")}",
       s"${endpoint.name} ${argNames.mkString(" ")} =",
-      s"""  HttpBuilder.${endpoint.request.method} ${urlStringLiteral(ctx.urlPrefix)(endpoint.request.url)}""",
+      s"""  HttpBuilder.${endpoint.request.method} $urlExpr""".stripMargin,
       withModifiers.mkString("    |> ", "\n    |> ", ""),
       ""
     )
-  }
-
-  def urlStringLiteral(urlPrefix: String)(elmUrl: ElmUrl): String = {
-
-    val urlExpr = elmUrl.segments
-      .collect {
-        case StaticSegment(s) =>
-          s
-        case VariableSegment(nme, tpe) =>
-          val stringArg = Commons.toStringFunctionExpr(tpe)
-            .map(toString => s"$toString $nme")
-            .getOrElse(nme)
-          s"""" ++ $stringArg ++ """"
-      }
-      .mkString("\"" + urlPrefix, "/", "\"")
-      .replace(" ++ \"\"", "")
-
-    if (elmUrl.segments.exists(_.isInstanceOf[VariableSegment])) {
-      s"($urlExpr)"
-    } else {
-      urlExpr
-    }
-  }
-
-  def toQueryParamsListElems(queryParamName: String, elmType: ElmType): String = elmType match {
-    case AppliedType.Maybe(tpe) =>
-      s"""($queryParamName |> Maybe.map (\\p -> ("$queryParamName", ${Commons.toStringFunctionExpr(tpe)
-        .getOrElse("")} p)) |> Maybe.Extra.toList)"""
-    case AppliedType.List(tpe) =>
-      s"""($queryParamName |> List.map (\\p -> ("$queryParamName", ${Commons.toStringFunctionExpr(tpe).getOrElse("")} p)))"""
-    case _: BasicType =>
-      s"""[("$queryParamName", ${Commons.toStringFunctionExpr(elmType).getOrElse("")} $queryParamName)]"""
-    case _ =>
-      s"[{- unsupported query params type in elm codegen: $elmType -}]"
   }
 
   def requestEntity(elmRequest: ElmRequest): Option[(String, String, String)] = {

@@ -2,7 +2,7 @@ package io.scalaland.endpoints.elm
 
 import java.io.File
 
-import io.scalaland.endpoints.elm.emit.{FileUtils, HttpEmit, NameUtils, TypeEmit, UrlEmit}
+import io.scalaland.endpoints.elm.emit._
 import io.scalaland.endpoints.elm.model._
 
 trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchemas {
