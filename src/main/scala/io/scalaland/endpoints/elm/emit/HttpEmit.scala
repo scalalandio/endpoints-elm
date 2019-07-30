@@ -9,6 +9,7 @@ object HttpEmit {
       Commons.headerComment,
       s"module Request.${module.name} exposing (..)",
       "",
+      s"import Request.Url.${module.name}",
       httpImports,
       imports(module).distinct.sorted.map(i => s"import $i exposing (..)").mkString("\n"),
       "",
@@ -81,7 +82,7 @@ object HttpEmit {
         "HttpBuilder.withTimeout 30000"
 
     List(
-      documentationString(endpoint),
+      Commons.documentationString(endpoint),
       s"${endpoint.name} : ${(argTypesStr :+ retTpeStr).mkString(" -> ")}",
       s"${endpoint.name} ${argNames.mkString(" ")} =",
       s"""  HttpBuilder.${endpoint.request.method} ${urlStringLiteral(ctx.urlPrefix)(endpoint.request.url)}""",
@@ -97,7 +98,7 @@ object HttpEmit {
         case StaticSegment(s) =>
           s
         case VariableSegment(nme, tpe) =>
-          val stringArg = toStringFunctionExpr(tpe)
+          val stringArg = Commons.toStringFunctionExpr(tpe)
             .map(toString => s"$toString $nme")
             .getOrElse(nme)
           s"""" ++ $stringArg ++ """"
@@ -112,24 +113,14 @@ object HttpEmit {
     }
   }
 
-  def toStringFunctionExpr(elmType: ElmType): Option[String] = elmType match {
-    case BasicType.Uuid       => Some("Uuid.toString")
-    case BasicType.String     => None
-    case BasicType.Bool       => Some("(String.toLower << Bool.Extra.toString)")
-    case BasicType.Int        => Some("String.fromInt")
-    case BasicType.Float      => Some("String.fromFloat")
-    case cbt: CustomBasicType => Some(cbt.toStringExpr)
-    case _                    => Some("toString")
-  }
-
   def toQueryParamsListElems(queryParamName: String, elmType: ElmType): String = elmType match {
     case AppliedType.Maybe(tpe) =>
-      s"""($queryParamName |> Maybe.map (\\p -> ("$queryParamName", ${toStringFunctionExpr(tpe)
+      s"""($queryParamName |> Maybe.map (\\p -> ("$queryParamName", ${Commons.toStringFunctionExpr(tpe)
         .getOrElse("")} p)) |> Maybe.Extra.toList)"""
     case AppliedType.List(tpe) =>
-      s"""($queryParamName |> List.map (\\p -> ("$queryParamName", ${toStringFunctionExpr(tpe).getOrElse("")} p))"""
+      s"""($queryParamName |> List.map (\\p -> ("$queryParamName", ${Commons.toStringFunctionExpr(tpe).getOrElse("")} p)))"""
     case _: BasicType =>
-      s"""[("$queryParamName", ${toStringFunctionExpr(elmType).getOrElse("")} $queryParamName)]"""
+      s"""[("$queryParamName", ${Commons.toStringFunctionExpr(elmType).getOrElse("")} $queryParamName)]"""
     case _ =>
       s"[{- unsupported query params type in elm codegen: $elmType -}]"
   }
@@ -174,18 +165,5 @@ object HttpEmit {
     val segmentTpes = endpoint.request.url.segments.collect { case VariableSegment(_, tpe) => tpe }.distinct
     val queryParamTpes = endpoint.request.url.queryParams.map(_._2).distinct
     segmentTpes ++ queryParamTpes :+ endpoint.request.entity :+ endpoint.response
-  }
-
-  def documentationString(endpoint: ElmEndpoint): String = {
-    (endpoint.summary, endpoint.description) match {
-      case (Some(summaryDoc), Some(descriptionDoc)) =>
-        s"{-| $summaryDoc\n\n$descriptionDoc\n-}"
-      case (Some(summaryDoc), None) =>
-        s"{-| $summaryDoc -}"
-      case (None, Some(descriptionDoc)) =>
-        s"{-| $descriptionDoc -}"
-      case (None, None) =>
-        ""
-    }
   }
 }

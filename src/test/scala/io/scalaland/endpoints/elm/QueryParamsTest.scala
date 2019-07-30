@@ -34,6 +34,16 @@ object QueryParamsTest extends CodegenTest {
 
     def dateEndpoint: Endpoint[LocalDate, Unit] =
       endpoint(get(path / "date" /? qs[LocalDate]("date")), emptyResponse(), tags = List("QueryParams"))
+
+    def listEndpoint: Endpoint[List[Int], Unit] =
+      endpoint(get(path / "list" /? qs[List[Int]]("value")), emptyResponse(), tags = List("QueryParams"))
+
+    def optionEndpoint: Endpoint[Option[Int], Unit] =
+      endpoint(get(path / "option" /? qs[Option[Int]]("value")), emptyResponse(), tags = List("QueryParams"))
+
+    def manyParamsEndpoint: Endpoint[(Int, Double), Unit] =
+      endpoint(get(path / "many-params" /? (qs[Int]("intValue") & qs[Double]("dblValue"))), emptyResponse(), tags = List("QueryParams"))
+
   }
 
   object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator {
@@ -41,7 +51,7 @@ object QueryParamsTest extends CodegenTest {
     implicit def dateQueryStringParam: ElmType = CustomTypes.date
 
     val allEndpoints: Seq[ElmEndpoint] =
-      Seq(stringEndpoint, intEndpoint, longEndpoint, doubleEndpoint, booleanEndpoint, uuidEndpoint, dateEndpoint)
+      Seq(stringEndpoint, intEndpoint, longEndpoint, doubleEndpoint, booleanEndpoint, uuidEndpoint, dateEndpoint, listEndpoint, optionEndpoint, manyParamsEndpoint)
   }
 
   val tests = Tests {

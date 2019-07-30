@@ -223,7 +223,8 @@ You need to have installed following packages:
 "elm/core": "1.0.2"
 "elm/http": "1.0.0"
 "elm/json": "1.1.3"
-"elm-community/maybe-extra": "5.0.0"
+"elm-community/maybe-extra": "5.0.0",
+"elm/url": "1.0.0",
 "lukewestby/elm-http-builder": "6.0.0"
 ```
 
