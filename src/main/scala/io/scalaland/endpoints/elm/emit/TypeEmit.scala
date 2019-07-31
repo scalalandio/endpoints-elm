@@ -64,6 +64,7 @@ object TypeEmit {
         case BasicType.Float      => "0.0"
         case BasicType.Bool       => "False"
         case BasicType.Uuid       => "Tuple.first <| step Uuid.uuidGenerator (initialSeed 0)"
+        case BasicType.Bytes      => "{- initial values for Bytes type not supported in endpoints-elm -}"
       }
     case appliedType: AppliedType =>
       appliedType match {
@@ -96,6 +97,7 @@ object TypeEmit {
         case BasicType.Float      => s"Encode.float $arg"
         case BasicType.Bool       => s"Encode.bool $arg"
         case BasicType.Uuid       => s"Uuid.encode $arg"
+        case BasicType.Bytes      => s"{- json encoding for Bytes not supported in endpoints-elm! -}"
       }
     case appliedType: AppliedType =>
       appliedType match {
@@ -158,6 +160,7 @@ object TypeEmit {
         case BasicType.Float      => "Decode.float"
         case BasicType.Bool       => "Decode.bool"
         case BasicType.Uuid       => "Uuid.decoder"
+        case BasicType.Bytes      => s"{- json decoding for Bytes not supported in endpoints-elm! -}"
       }
     case appliedType: AppliedType =>
       val decoder = appliedType match {
