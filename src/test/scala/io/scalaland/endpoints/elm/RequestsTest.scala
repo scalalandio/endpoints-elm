@@ -78,7 +78,10 @@ object RequestsTest extends CodegenTest {
 
     "support requests" - {
 
+//      writeElmCode("src/test/resources/requests-test")(allEndpoints: _*)()
+
       generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("requests-test")(
+        "EndpointsElm.elm",
         "Data/Coproduct.elm",
         "Data/Foo.elm",
         "Data/Inst1.elm",

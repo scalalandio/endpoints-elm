@@ -9,111 +9,113 @@ module Request.Requests exposing (..)
 
 import Request.Url.Requests
 import Http
-import HttpBuilder exposing (RequestBuilder)
+import HttpBuilder.Task exposing (RequestBuilder)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
+import Bytes exposing (Bytes)
 import Dict exposing (Dict)
 
 import Data.Coproduct exposing (..)
 import Data.Foo exposing (..)
 import Date exposing (..)
 import Uuid exposing (..)
+import EndpointsElm
 
 
-jsonstringPost : String -> RequestBuilder ()
+jsonstringPost : String -> RequestBuilder Http.Error ()
 jsonstringPost string =
-  HttpBuilder.post (Request.Url.Requests.jsonstringPost )
-    |> HttpBuilder.withJsonBody (Encode.string  string)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsonstringPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Encode.string string))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonintPost : Int -> RequestBuilder ()
+jsonintPost : Int -> RequestBuilder Http.Error ()
 jsonintPost int =
-  HttpBuilder.post (Request.Url.Requests.jsonintPost )
-    |> HttpBuilder.withJsonBody (Encode.int  int)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsonintPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Encode.int int))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonlongPost : Int -> RequestBuilder ()
+jsonlongPost : Int -> RequestBuilder Http.Error ()
 jsonlongPost int =
-  HttpBuilder.post (Request.Url.Requests.jsonlongPost )
-    |> HttpBuilder.withJsonBody (Encode.int  int)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsonlongPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Encode.int int))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonfloatPost : Float -> RequestBuilder ()
+jsonfloatPost : Float -> RequestBuilder Http.Error ()
 jsonfloatPost float =
-  HttpBuilder.post (Request.Url.Requests.jsonfloatPost )
-    |> HttpBuilder.withJsonBody (Encode.float  float)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsonfloatPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Encode.float float))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsondoublePost : Float -> RequestBuilder ()
+jsondoublePost : Float -> RequestBuilder Http.Error ()
 jsondoublePost float =
-  HttpBuilder.post (Request.Url.Requests.jsondoublePost )
-    |> HttpBuilder.withJsonBody (Encode.float  float)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsondoublePost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Encode.float float))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonbooleanPost : Bool -> RequestBuilder ()
+jsonbooleanPost : Bool -> RequestBuilder Http.Error ()
 jsonbooleanPost bool =
-  HttpBuilder.post (Request.Url.Requests.jsonbooleanPost )
-    |> HttpBuilder.withJsonBody (Encode.bool  bool)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsonbooleanPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Encode.bool bool))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonuuidPost : Uuid -> RequestBuilder ()
+jsonuuidPost : Uuid -> RequestBuilder Http.Error ()
 jsonuuidPost uuid =
-  HttpBuilder.post (Request.Url.Requests.jsonuuidPost )
-    |> HttpBuilder.withJsonBody (Uuid.encode  uuid)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsonuuidPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Uuid.encode uuid))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsondatePost : Date -> RequestBuilder ()
+jsondatePost : Date -> RequestBuilder Http.Error ()
 jsondatePost date =
-  HttpBuilder.post (Request.Url.Requests.jsondatePost )
-    |> HttpBuilder.withJsonBody ((Encode.string << Date.toIsoString)  date)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsondatePost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody ((Encode.string << Date.toIsoString) date))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsoncaseclassPost : Foo -> RequestBuilder ()
+jsoncaseclassPost : Foo -> RequestBuilder Http.Error ()
 jsoncaseclassPost foo =
-  HttpBuilder.post (Request.Url.Requests.jsoncaseclassPost )
-    |> HttpBuilder.withJsonBody (Data.Foo.encoder  foo)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsoncaseclassPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Data.Foo.encoder foo))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsoncoproductPost : Coproduct -> RequestBuilder ()
+jsoncoproductPost : Coproduct -> RequestBuilder Http.Error ()
 jsoncoproductPost coproduct =
-  HttpBuilder.post (Request.Url.Requests.jsoncoproductPost )
-    |> HttpBuilder.withJsonBody (Data.Coproduct.encoder  coproduct)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsoncoproductPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Data.Coproduct.encoder coproduct))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonlistPost : (List String) -> RequestBuilder ()
+jsonlistPost : (List String) -> RequestBuilder Http.Error ()
 jsonlistPost list =
-  HttpBuilder.post (Request.Url.Requests.jsonlistPost )
-    |> HttpBuilder.withJsonBody ((Encode.list Encode.string )  list)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsonlistPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody ((Encode.list Encode.string ) list))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonmapPost : (Dict String Foo) -> RequestBuilder ()
+jsonmapPost : (Dict String Foo) -> RequestBuilder Http.Error ()
 jsonmapPost dict =
-  HttpBuilder.post (Request.Url.Requests.jsonmapPost )
-    |> HttpBuilder.withJsonBody ((Encode.dict identity (Data.Foo.encoder ) ) dict)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Requests.jsonmapPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody ((Encode.dict identity (Data.Foo.encoder ) dict)))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 

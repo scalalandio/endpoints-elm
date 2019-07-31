@@ -9,83 +9,85 @@ module Request.QueryParams exposing (..)
 
 import Request.Url.QueryParams
 import Http
-import HttpBuilder exposing (RequestBuilder)
+import HttpBuilder.Task exposing (RequestBuilder)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
+import Bytes exposing (Bytes)
 import Dict exposing (Dict)
 
 import Date exposing (..)
 import Uuid exposing (..)
+import EndpointsElm
 
 
-stringGet : String -> RequestBuilder ()
+stringGet : String -> RequestBuilder Http.Error ()
 stringGet string =
-  HttpBuilder.get (Request.Url.QueryParams.stringGet string)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.stringGet string)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-intGet : Int -> RequestBuilder ()
+intGet : Int -> RequestBuilder Http.Error ()
 intGet int =
-  HttpBuilder.get (Request.Url.QueryParams.intGet int)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.intGet int)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-longGet : Int -> RequestBuilder ()
+longGet : Int -> RequestBuilder Http.Error ()
 longGet long =
-  HttpBuilder.get (Request.Url.QueryParams.longGet long)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.longGet long)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-doubleGet : Float -> RequestBuilder ()
+doubleGet : Float -> RequestBuilder Http.Error ()
 doubleGet double =
-  HttpBuilder.get (Request.Url.QueryParams.doubleGet double)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.doubleGet double)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-boolGet : Bool -> RequestBuilder ()
+boolGet : Bool -> RequestBuilder Http.Error ()
 boolGet bool =
-  HttpBuilder.get (Request.Url.QueryParams.boolGet bool)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.boolGet bool)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-uuidGet : Uuid -> RequestBuilder ()
+uuidGet : Uuid -> RequestBuilder Http.Error ()
 uuidGet uuid =
-  HttpBuilder.get (Request.Url.QueryParams.uuidGet uuid)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.uuidGet uuid)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-dateGet : Date -> RequestBuilder ()
+dateGet : Date -> RequestBuilder Http.Error ()
 dateGet date =
-  HttpBuilder.get (Request.Url.QueryParams.dateGet date)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.dateGet date)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-listGet : (List Int) -> RequestBuilder ()
+listGet : (List Int) -> RequestBuilder Http.Error ()
 listGet value =
-  HttpBuilder.get (Request.Url.QueryParams.listGet value)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.listGet value)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-optionGet : (Maybe Int) -> RequestBuilder ()
+optionGet : (Maybe Int) -> RequestBuilder Http.Error ()
 optionGet value =
-  HttpBuilder.get (Request.Url.QueryParams.optionGet value)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.optionGet value)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-manyparamsGet : Int -> Float -> RequestBuilder ()
+manyparamsGet : Int -> Float -> RequestBuilder Http.Error ()
 manyparamsGet intValue dblValue =
-  HttpBuilder.get (Request.Url.QueryParams.manyparamsGet intValue dblValue)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.QueryParams.manyparamsGet intValue dblValue)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 

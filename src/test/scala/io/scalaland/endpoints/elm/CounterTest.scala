@@ -47,7 +47,10 @@ object CounterTest extends CodegenTest {
 
     "generate code for simple domain model" - {
 
+//      writeElmCode("src/test/resources/counter-test")(allEndpoints: _*)()
+
       generateElmContents(allEndpoints: _*)() sameAs ReferenceData.from("counter-test")(
+        "EndpointsElm.elm",
         "Data/Counter.elm",
         "Data/Increment.elm",
         "Request/Url/Counter.elm",
