@@ -32,6 +32,7 @@ object AppliedType {
   case class Maybe(tpe: ElmType) extends AppliedType("Maybe", Seq(tpe))
   case class List(tpe: ElmType) extends AppliedType("List", Seq(tpe))
   case class Dict(tpe: ElmType) extends AppliedType("Dict", Seq(BasicType.String, tpe))
+  case class Result(errTpe: ElmType, okTpe: ElmType) extends AppliedType("Result", Seq(errTpe, okTpe))
 }
 
 case class ReferencedType(name: String) extends ElmType

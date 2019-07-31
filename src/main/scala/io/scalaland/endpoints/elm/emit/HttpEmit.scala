@@ -11,15 +11,15 @@ object HttpEmit {
       "",
       s"import Request.Url.${module.name}",
       httpImports,
-      imports(module).distinct.sorted.map(i => s"import $i exposing (..)").mkString("\n"),
+      imports(module).map(i => s"import $i exposing (..)").mkString("\n"),
+      extraImports(module).map(i => s"import $i").mkString("\n"),
       "",
     ) ++ module.endpoints.flatMap(endpointDefinition(module.name)))
       .mkString("\n")
   }
 
   private val httpImports =
-    s"""import EndpointsElm
-       |import Http
+    s"""import Http
        |import HttpBuilder.Task exposing (RequestBuilder)
        |import Json.Decode as Decode
        |import Json.Encode as Encode
@@ -100,6 +100,17 @@ object HttpEmit {
       .flatMap(endpointReferencedTypes)
       .flatMap(ElmType.referencesShallow)
       .map(TypeEmit.importModuleName)
+      .distinct
+      .sorted
+  }
+
+  def extraImports(module: ElmHttpModule): Seq[String] = {
+    module.endpoints
+      .flatMap { endpoint =>
+        endpoint.encodedType.extraImports ++ endpoint.request.encodedType.extraImports
+      }
+      .distinct
+      .sorted
   }
 
   def endpointReferencedTypes(endpoint: ElmEndpoint): Seq[ElmType] = {

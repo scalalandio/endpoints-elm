@@ -71,6 +71,7 @@ object TypeEmit {
         case AppliedType.Maybe(_) => "Nothing"
         case AppliedType.List(_)  => "[]"
         case AppliedType.Dict(_)  => "Dict.empty"
+        case AppliedType.Result(errTpe, _) => s"Err (${initDefinition(errTpe, topLevel = false)})"
       }
     case ReferencedType(name) => s"Data.$name.init"
     case TypeAlias(_, fields) if topLevel =>
@@ -109,6 +110,8 @@ object TypeEmit {
         case AppliedType.Dict(tpe) =>
           val tpeEncoder = encoderDefinition(tpe, "", topLevel = false)
           s"(Encode.dict identity ($tpeEncoder) $arg)"
+        case AppliedType.Result(_, _) =>
+          "{- json encoding Result type not supported in endpoints-elm! -}"
       }
     case ReferencedType(name) =>
       s"Data.$name.encoder $arg"
@@ -170,6 +173,8 @@ object TypeEmit {
           s"Decode.list ${decoderDefinition(tpe, topLevel = false)}"
         case AppliedType.Dict(tpe) =>
           s"Decode.dict ${decoderDefinition(tpe, topLevel = false)}"
+        case AppliedType.Result(_, _) =>
+          "{- json decoding Result type not supported in endpoints-elm! -}"
       }
       if (topLevel) decoder else s"($decoder)"
     case ReferencedType(name) =>

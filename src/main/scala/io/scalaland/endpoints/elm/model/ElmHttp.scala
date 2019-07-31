@@ -52,9 +52,10 @@ sealed trait EncodedType {
   def contentType: String
 
   def resolveExpr: String // elm expr of type: Http.Response respEnc -> Result Http.Error tpe
-  def resolverFunction
-    : String // elm expr of type: (Http.Response respEnc -> Result Http.Error a) -> Http.Resolver Http.Error a
+  def resolverFunction : String // elm expr of type: (Http.Response respEnc -> Result Http.Error a) -> Http.Resolver Http.Error a
   def encodeBody(argName: String): String // elm expr of type Body that may consume argName of type tpe
+
+  def extraImports: Seq[String]
 }
 
 case object NoEntityEncodedType extends EncodedType {
@@ -63,6 +64,7 @@ case object NoEntityEncodedType extends EncodedType {
   def resolveExpr: String = "EndpointsElm.httpResolveUnit"
   def resolverFunction: String = "Http.stringResolver"
   def encodeBody(argName: String): String = s"""Http.stringBody "$contentType" "" """
+  def extraImports: Seq[String] = Seq("EndpointsElm")
 }
 
 case object StringEncodedType extends EncodedType {
@@ -71,6 +73,7 @@ case object StringEncodedType extends EncodedType {
   def resolveExpr: String = s"EndpointsElm.httpResolveString"
   def resolverFunction: String = "Http.stringResolver"
   def encodeBody(argName: String): String = s"""Http.stringBody "$contentType" $argName"""
+  def extraImports: Seq[String] = Seq("EndpointsElm")
 }
 
 case class JsonEncodedType(tpe: ElmType) extends EncodedType {
@@ -79,6 +82,7 @@ case class JsonEncodedType(tpe: ElmType) extends EncodedType {
   def resolverFunction: String = "Http.stringResolver"
   def encodeBody(argName: String): String =
     s"""Http.jsonBody (${TypeEmit.encoderDefinition(tpe, argName, topLevel = false)})"""
+  def extraImports: Seq[String] = Seq("EndpointsElm")
 }
 
 case class BinaryEncodedType(tpe: ElmType = BasicType.Bytes) extends EncodedType {
@@ -86,6 +90,7 @@ case class BinaryEncodedType(tpe: ElmType = BasicType.Bytes) extends EncodedType
   def resolveExpr: String = "EndpointsElm.httpResolveBytes"
   def resolverFunction: String = "Http.bytesResolver"
   def encodeBody(argName: String): String = s"""Http.bytesBody "$contentType" $argName"""
+  def extraImports: Seq[String] = Seq("EndpointsElm")
 }
 
 class WrappedEncodedType(underlying: EncodedType) extends EncodedType {
@@ -94,4 +99,5 @@ class WrappedEncodedType(underlying: EncodedType) extends EncodedType {
   def resolveExpr: String = underlying.resolveExpr
   def resolverFunction: String = underlying.resolverFunction
   def encodeBody(argName: String): String = underlying.encodeBody(argName)
+  def extraImports: Seq[String] = underlying.extraImports
 }

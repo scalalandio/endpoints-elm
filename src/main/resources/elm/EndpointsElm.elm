@@ -11,7 +11,7 @@ import Http
 import Json.Decode exposing (Decoder)
 
 
-httpResolveNotFound : (Http.Response a -> Result Http.Error a) -> Http.Response a -> Result Http.Error (Maybe a)
+httpResolveNotFound : (Http.Response a -> Result Http.Error b) -> Http.Response a -> Result Http.Error (Maybe b)
 httpResolveNotFound resolveOriginal response =
     case response of
         Http.BadStatus_ metadata _ ->
