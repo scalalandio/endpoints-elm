@@ -6,16 +6,18 @@ import io.scalaland.endpoints.elm.model._
 
 trait Responses extends algebra.Responses {
 
-  type Response[A] = (ElmEntityEncoding, ElmType)
+  type Response[A] = EncodedType
 
-  def emptyResponse(docs: Documentation): (ElmEntityEncoding, ElmType) =
-    (NoEntity, BasicType.Unit)
+  def emptyResponse(docs: Documentation): EncodedType =
+    NoEntityEncodedType
 
-  def textResponse(docs: Documentation): (ElmEntityEncoding, ElmType) =
-    (StringEncoding, BasicType.String)
+  def textResponse(docs: Documentation): EncodedType =
+    StringEncodedType
 
-  // TODO: try to model with encoded type so that return type is lifted, as in Scala client interpreters
-  def wheneverFound[A](response: (ElmEntityEncoding, ElmType),
-                       notFoundDocs: Documentation): (ElmEntityEncoding, ElmType) =
-    response
+  def wheneverFound[A](response: EncodedType,
+                       notFoundDocs: Documentation): EncodedType =
+    new WrappedEncodedType(response) {
+      override def tpe: ElmType = AppliedType.Maybe(response.tpe)
+      override def resolveExpr: String = s"EndpointsElm.httpResolveNotFound (${response.resolveExpr})"
+    }
 }

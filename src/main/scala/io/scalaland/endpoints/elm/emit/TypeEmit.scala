@@ -40,28 +40,18 @@ object TypeEmit {
       s"type alias $name =" + fields
         .map {
           case (nme, tpe) =>
-            s"$nme : ${typeReference(tpe)}"
+            s"$nme : ${ElmType.typeReference(tpe)}"
         }
         .mkString("\n  { ", "\n  , ", "\n  }")
     case UnionType(name, constructors, _) =>
       constructors
         .map {
           case (nme, param) =>
-            s"${unionConstructorName(name, nme)} ${typeReference(param)}"
+            s"${unionConstructorName(name, nme)} ${ElmType.typeReference(param)}"
         }
         .mkString(s"type $name\n  = ", "\n  | ", "")
     case other =>
-      typeReference(other)
-  }
-
-  def typeReference(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
-    case basicType: BasicType => basicType.name
-    case appliedType: AppliedType =>
-      val refStr = s"${appliedType.name} ${appliedType.args.map(typeReference(_, topLevel = false)).mkString(" ")}"
-      if (topLevel) refStr else s"($refStr)"
-    case ReferencedType(name)  => name
-    case TypeAlias(name, _)    => name
-    case UnionType(name, _, _) => name
+      ElmType.typeReference(other)
   }
 
   def initDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
@@ -258,8 +248,8 @@ object TypeEmit {
     case TypeAlias(_, fields) =>
       fields.toList.flatMap {
         case (fieldName, fieldTpe) =>
-          val tpeRef = typeReference(elmType)
-          val fieldTypeRef = typeReference(fieldTpe)
+          val tpeRef = ElmType.typeReference(elmType)
+          val fieldTypeRef = ElmType.typeReference(fieldTpe)
           val argName = NameUtils.identFromTypeName(elmType)
           List(
             s"set${NameUtils.camelizeName(fieldName)} : $fieldTypeRef -> $tpeRef -> $tpeRef",
@@ -276,8 +266,8 @@ object TypeEmit {
     case TypeAlias(_, fields) =>
       fields.toList.flatMap {
         case (fieldName, fieldTpe) =>
-          val tpeRef = typeReference(elmType)
-          val fieldTypeRef = typeReference(fieldTpe)
+          val tpeRef = ElmType.typeReference(elmType)
+          val fieldTypeRef = ElmType.typeReference(fieldTpe)
           val argName = NameUtils.identFromTypeName(elmType)
           List(
             s"update${NameUtils.camelizeName(fieldName)} : ($fieldTypeRef -> $fieldTypeRef) -> $tpeRef -> $tpeRef",

@@ -25,6 +25,10 @@ trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchema
   def generateElmContents(endpoints: ElmEndpoint*)(urlPrefix: String = "",
                                                    withCredentials: Boolean = false): Seq[(File, String)] = {
 
+    val commonFiles = Seq(
+      new File("EndpointsElm.elm") -> scala.io.Source.fromResource("elm/EndpointsElm.elm").mkString
+    )
+
     val typeFiles = captureEndpointsTypes(endpoints).map { elmType =>
       new File(s"Data/${elmType.name}.elm") -> TypeEmit.moduleDefinition(elmType)
     }
@@ -39,7 +43,7 @@ trait ElmCodeGenerator extends Endpoints with JsonSchemaEntities with JsonSchema
       new File(s"Request/Url/${httpModule.name}.elm") -> UrlEmit.moduleDefinition(httpModule)(emitCtx)
     }
 
-    typeFiles ++ httpFiles ++ urlFiles
+    commonFiles ++ typeFiles ++ httpFiles ++ urlFiles
   }
 
   private def captureEndpointsTypes(endpoints: Seq[ElmEndpoint]): Seq[ElmType] = {

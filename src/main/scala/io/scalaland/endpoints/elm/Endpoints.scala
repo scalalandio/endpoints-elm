@@ -13,5 +13,5 @@ trait Endpoints extends algebra.Endpoints with Requests with Responses {
                      summary: Documentation = None,
                      description: Documentation = None,
                      tags: List[String] = Nil): Endpoint[A, B] =
-    ElmEndpoint(request.name, request, response._1, response._2, summary, description, tags)
+    ElmEndpoint(request.name, request, response, summary, description, tags)
 }
