@@ -210,7 +210,7 @@ incrementPost =
 ##### Http modules
 
 Http module utilizes generated url module and for each endpoint contains
-a function that returns `HttpBuilder.RequestBuilder`.
+a function that returns `HttpBuilder.Task.RequestBuilder`.
 
 ```elm
 {-
@@ -223,31 +223,34 @@ a function that returns `HttpBuilder.RequestBuilder`.
 
 module Request.Counter exposing (currentvalueGet, incrementPost)
 
-import Bool.Extra
-import Data.Counter exposing (..)
-import Data.Increment exposing (..)
-import Dict exposing (Dict)
+import Request.Url.Counter
+import EndpointsElm
 import Http
-import HttpBuilder exposing (RequestBuilder)
+import HttpBuilder.Task exposing (RequestBuilder)
 import Json.Decode as Decode
 import Json.Encode as Encode
+import Bool.Extra
 import Maybe.Extra
-import Request.Url.Counter
+import Bytes exposing (Bytes)
+import Dict exposing (Dict)
+
+import Data.Counter exposing (..)
+import Data.Increment exposing (..)
 
 
-currentvalueGet : RequestBuilder Counter
-currentvalueGet =
-    HttpBuilder.get Request.Url.Counter.currentvalueGet
-        |> HttpBuilder.withExpectJson Data.Counter.decoder
-        |> HttpBuilder.withTimeout 30000
+currentvalueGet : RequestBuilder Http.Error Counter
+currentvalueGet  =
+  HttpBuilder.Task.get (Request.Url.Counter.currentvalueGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Data.Counter.decoder)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-incrementPost : Increment -> RequestBuilder ()
+incrementPost : Increment -> RequestBuilder Http.Error ()
 incrementPost increment =
-    HttpBuilder.post Request.Url.Counter.incrementPost
-        |> HttpBuilder.withJsonBody (Data.Increment.encoder increment)
-        |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-        |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.post (Request.Url.Counter.incrementPost )
+    |> HttpBuilder.Task.withBody (Http.jsonBody (Data.Increment.encoder increment))
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 ```
 
 ##### Dependencies
