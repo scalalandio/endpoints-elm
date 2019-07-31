@@ -29,9 +29,7 @@ trait Requests extends algebra.Requests with Urls with Methods {
   type RequestEntity[A] = EncodedType
 
   implicit def reqEntityInvFunctor: InvariantFunctor[RequestEntity] = new InvariantFunctor[RequestEntity] {
-    def xmap[From, To](f: EncodedType,
-                       map: From => To,
-                       contramap: To => From): EncodedType = f
+    def xmap[From, To](f: EncodedType, map: From => To, contramap: To => From): EncodedType = f
   }
 
   def emptyRequest: RequestEntity[Unit] = NoEntityEncodedType

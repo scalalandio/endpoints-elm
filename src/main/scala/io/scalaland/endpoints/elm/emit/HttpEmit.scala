@@ -56,7 +56,8 @@ object HttpEmit {
       s"""HttpBuilder.Task.withHeader "${header.name}" ${header.normalizedName}"""
     }
 
-    val withCredentialsModifier = if (ctx.withCredentials) List("HttpBuilder.Task.withCredentials") else List.empty[String]
+    val withCredentialsModifier =
+      if (ctx.withCredentials) List("HttpBuilder.Task.withCredentials") else List.empty[String]
 
     val withModifiers =
       withBodyModifier ++
@@ -84,11 +85,7 @@ object HttpEmit {
       case et =>
         val argName = NameUtils.identFromTypeName(et.tpe)
         Some {
-          (
-            argName,
-            ElmType.tpeSignature(et.tpe),
-            s"HttpBuilder.Task.withBody (${et.encodeBody(argName)})"
-          )
+          (argName, ElmType.tpeSignature(et.tpe), s"HttpBuilder.Task.withBody (${et.encodeBody(argName)})")
         }
     }
   }

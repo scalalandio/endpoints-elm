@@ -9,10 +9,7 @@ case class ElmEndpoint(name: String,
                        description: Option[String],
                        tags: List[String])
 
-case class ElmRequest(method: String,
-                      url: ElmUrl,
-                      encodedType: EncodedType,
-                      headers: List[ElmHeader]) {
+case class ElmRequest(method: String, url: ElmUrl, encodedType: EncodedType, headers: List[ElmHeader]) {
 
   def name: String = {
     val urlSegments = url.segments.collect {
@@ -50,13 +47,13 @@ sealed trait ElmHeader {
 case class RequiredHeader(name: String) extends ElmHeader
 case class OptionalHeader(name: String) extends ElmHeader
 
-
 sealed trait EncodedType {
   def tpe: ElmType
   def contentType: String
 
   def resolveExpr: String // elm expr of type: Http.Response respEnc -> Result Http.Error tpe
-  def resolverFunction: String // elm expr of type: (Http.Response respEnc -> Result Http.Error a) -> Http.Resolver Http.Error a
+  def resolverFunction
+    : String // elm expr of type: (Http.Response respEnc -> Result Http.Error a) -> Http.Resolver Http.Error a
   def encodeBody(argName: String): String // elm expr of type Body that may consume argName of type tpe
 }
 
@@ -80,7 +77,8 @@ case class JsonEncodedType(tpe: ElmType) extends EncodedType {
   def contentType: String = "application/json"
   def resolveExpr: String = s"EndpointsElm.httpResolveJson (${TypeEmit.decoderDefinition(tpe, topLevel = false)})"
   def resolverFunction: String = "Http.stringResolver"
-  def encodeBody(argName: String): String = s"""Http.jsonBody (${TypeEmit.encoderDefinition(tpe, argName, topLevel = false)})"""
+  def encodeBody(argName: String): String =
+    s"""Http.jsonBody (${TypeEmit.encoderDefinition(tpe, argName, topLevel = false)})"""
 }
 
 case class BinaryEncodedType(tpe: ElmType = BasicType.Bytes) extends EncodedType {

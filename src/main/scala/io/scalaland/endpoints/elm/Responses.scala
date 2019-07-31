@@ -14,8 +14,7 @@ trait Responses extends algebra.Responses {
   def textResponse(docs: Documentation): EncodedType =
     StringEncodedType
 
-  def wheneverFound[A](response: EncodedType,
-                       notFoundDocs: Documentation): EncodedType =
+  def wheneverFound[A](response: EncodedType, notFoundDocs: Documentation): EncodedType =
     new WrappedEncodedType(response) {
       override def tpe: ElmType = AppliedType.Maybe(response.tpe)
       override def resolveExpr: String = s"EndpointsElm.httpResolveNotFound (${response.resolveExpr})"
