@@ -59,7 +59,7 @@ httpResolve response =
             Err Http.Timeout
 
         Http.NetworkError_ ->
-            Err Http.Timeout
+            Err Http.NetworkError
 
         Http.BadStatus_ metadata _ ->
             Err (Http.BadStatus metadata.statusCode)
