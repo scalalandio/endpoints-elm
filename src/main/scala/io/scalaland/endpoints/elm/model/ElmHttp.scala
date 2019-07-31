@@ -52,7 +52,8 @@ sealed trait EncodedType {
   def contentType: String
 
   def resolveExpr: String // elm expr of type: Http.Response respEnc -> Result Http.Error tpe
-  def resolverFunction : String // elm expr of type: (Http.Response respEnc -> Result Http.Error a) -> Http.Resolver Http.Error a
+  def resolverFunction
+    : String // elm expr of type: (Http.Response respEnc -> Result Http.Error a) -> Http.Resolver Http.Error a
   def encodeBody(argName: String): String // elm expr of type Body that may consume argName of type tpe
 
   def extraImports: Seq[String]
