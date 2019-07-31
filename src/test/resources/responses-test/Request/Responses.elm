@@ -9,99 +9,101 @@ module Request.Responses exposing (..)
 
 import Request.Url.Responses
 import Http
-import HttpBuilder exposing (RequestBuilder)
+import HttpBuilder.Task exposing (RequestBuilder)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
+import Bytes exposing (Bytes)
 import Dict exposing (Dict)
 
 import Data.Coproduct exposing (..)
 import Data.Foo exposing (..)
 import Date exposing (..)
 import Uuid exposing (..)
+import EndpointsElm
 
 
-jsonstringGet : RequestBuilder String
+jsonstringGet : RequestBuilder Http.Error String
 jsonstringGet  =
-  HttpBuilder.get (Request.Url.Responses.jsonstringGet )
-    |> HttpBuilder.withExpectJson Decode.string
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsonstringGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Decode.string)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonintGet : RequestBuilder Int
+jsonintGet : RequestBuilder Http.Error Int
 jsonintGet  =
-  HttpBuilder.get (Request.Url.Responses.jsonintGet )
-    |> HttpBuilder.withExpectJson Decode.int
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsonintGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Decode.int)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonlongGet : RequestBuilder Int
+jsonlongGet : RequestBuilder Http.Error Int
 jsonlongGet  =
-  HttpBuilder.get (Request.Url.Responses.jsonlongGet )
-    |> HttpBuilder.withExpectJson Decode.int
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsonlongGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Decode.int)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonfloatGet : RequestBuilder Float
+jsonfloatGet : RequestBuilder Http.Error Float
 jsonfloatGet  =
-  HttpBuilder.get (Request.Url.Responses.jsonfloatGet )
-    |> HttpBuilder.withExpectJson Decode.float
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsonfloatGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Decode.float)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsondoubleGet : RequestBuilder Float
+jsondoubleGet : RequestBuilder Http.Error Float
 jsondoubleGet  =
-  HttpBuilder.get (Request.Url.Responses.jsondoubleGet )
-    |> HttpBuilder.withExpectJson Decode.float
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsondoubleGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Decode.float)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonbooleanGet : RequestBuilder Bool
+jsonbooleanGet : RequestBuilder Http.Error Bool
 jsonbooleanGet  =
-  HttpBuilder.get (Request.Url.Responses.jsonbooleanGet )
-    |> HttpBuilder.withExpectJson Decode.bool
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsonbooleanGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Decode.bool)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonuuidGet : RequestBuilder Uuid
+jsonuuidGet : RequestBuilder Http.Error Uuid
 jsonuuidGet  =
-  HttpBuilder.get (Request.Url.Responses.jsonuuidGet )
-    |> HttpBuilder.withExpectJson Uuid.decoder
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsonuuidGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Uuid.decoder)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsondateGet : RequestBuilder Date
+jsondateGet : RequestBuilder Http.Error Date
 jsondateGet  =
-  HttpBuilder.get (Request.Url.Responses.jsondateGet )
-    |> HttpBuilder.withExpectJson (Decode.string |> Decode.andThen (Date.fromIsoString >> Result.map Decode.succeed >> Result.withDefault (Decode.fail "can't parse the date!")))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsondateGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson ((Decode.string |> Decode.andThen (Date.fromIsoString >> Result.map Decode.succeed >> Result.withDefault (Decode.fail "can't parse the date!"))))))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsoncaseclassGet : RequestBuilder Foo
+jsoncaseclassGet : RequestBuilder Http.Error Foo
 jsoncaseclassGet  =
-  HttpBuilder.get (Request.Url.Responses.jsoncaseclassGet )
-    |> HttpBuilder.withExpectJson Data.Foo.decoder
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsoncaseclassGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Data.Foo.decoder)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsoncoproductGet : RequestBuilder Coproduct
+jsoncoproductGet : RequestBuilder Http.Error Coproduct
 jsoncoproductGet  =
-  HttpBuilder.get (Request.Url.Responses.jsoncoproductGet )
-    |> HttpBuilder.withExpectJson Data.Coproduct.decoder
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsoncoproductGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson (Data.Coproduct.decoder)))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonlistGet : RequestBuilder (List String)
+jsonlistGet : RequestBuilder Http.Error (List String)
 jsonlistGet  =
-  HttpBuilder.get (Request.Url.Responses.jsonlistGet )
-    |> HttpBuilder.withExpectJson (Decode.list Decode.string)
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsonlistGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson ((Decode.list Decode.string))))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-jsonmapGet : RequestBuilder (Dict String Foo)
+jsonmapGet : RequestBuilder Http.Error (Dict String Foo)
 jsonmapGet  =
-  HttpBuilder.get (Request.Url.Responses.jsonmapGet )
-    |> HttpBuilder.withExpectJson (Decode.dict Data.Foo.decoder)
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Responses.jsonmapGet )
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveJson ((Decode.dict Data.Foo.decoder))))
+    |> HttpBuilder.Task.withTimeout 30000
 

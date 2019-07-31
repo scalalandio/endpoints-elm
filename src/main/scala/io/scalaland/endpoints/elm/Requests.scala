@@ -26,17 +26,15 @@ trait Requests extends algebra.Requests with Urls with Methods {
     def xmap[From, To](f: List[ElmHeader], map: From => To, contramap: To => From): List[ElmHeader] = f
   }
 
-  type RequestEntity[A] = (ElmEntityEncoding, ElmType)
+  type RequestEntity[A] = EncodedType
 
   implicit def reqEntityInvFunctor: InvariantFunctor[RequestEntity] = new InvariantFunctor[RequestEntity] {
-    def xmap[From, To](f: (ElmEntityEncoding, ElmType),
-                       map: From => To,
-                       contramap: To => From): (ElmEntityEncoding, ElmType) = f
+    def xmap[From, To](f: EncodedType, map: From => To, contramap: To => From): EncodedType = f
   }
 
-  def emptyRequest: RequestEntity[Unit] = (NoEntity, BasicType.Unit)
+  def emptyRequest: RequestEntity[Unit] = NoEntityEncodedType
 
-  def textRequest(docs: Documentation = None): RequestEntity[String] = (StringEncoding, BasicType.String)
+  def textRequest(docs: Documentation = None): RequestEntity[String] = StringEncodedType
 
   type Request[A] = ElmRequest
 
@@ -47,5 +45,5 @@ trait Requests extends algebra.Requests with Urls with Methods {
     headers: RequestHeaders[HeadersP] = emptyHeaders
   )(implicit tuplerUB: Tupler.Aux[UrlP, BodyP, UrlAndBodyPTupled],
     tuplerUBH: Tupler.Aux[UrlAndBodyPTupled, HeadersP, Out]): Request[Out] =
-    ElmRequest(method, url, entity._1, entity._2, headers)
+    ElmRequest(method, url, entity, headers)
 }

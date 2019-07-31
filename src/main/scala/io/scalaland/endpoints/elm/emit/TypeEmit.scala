@@ -40,28 +40,18 @@ object TypeEmit {
       s"type alias $name =" + fields
         .map {
           case (nme, tpe) =>
-            s"$nme : ${typeReference(tpe)}"
+            s"$nme : ${ElmType.typeReference(tpe)}"
         }
         .mkString("\n  { ", "\n  , ", "\n  }")
     case UnionType(name, constructors, _) =>
       constructors
         .map {
           case (nme, param) =>
-            s"${unionConstructorName(name, nme)} ${typeReference(param)}"
+            s"${unionConstructorName(name, nme)} ${ElmType.typeReference(param)}"
         }
         .mkString(s"type $name\n  = ", "\n  | ", "")
     case other =>
-      typeReference(other)
-  }
-
-  def typeReference(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
-    case basicType: BasicType => basicType.name
-    case appliedType: AppliedType =>
-      val refStr = s"${appliedType.name} ${appliedType.args.map(typeReference(_, topLevel = false)).mkString(" ")}"
-      if (topLevel) refStr else s"($refStr)"
-    case ReferencedType(name)  => name
-    case TypeAlias(name, _)    => name
-    case UnionType(name, _, _) => name
+      ElmType.typeReference(other)
   }
 
   def initDefinition(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
@@ -74,12 +64,14 @@ object TypeEmit {
         case BasicType.Float      => "0.0"
         case BasicType.Bool       => "False"
         case BasicType.Uuid       => "Tuple.first <| step Uuid.uuidGenerator (initialSeed 0)"
+        case BasicType.Bytes      => "{- initial values for Bytes type not supported in endpoints-elm -}"
       }
     case appliedType: AppliedType =>
       appliedType match {
-        case AppliedType.Maybe(_) => "Nothing"
-        case AppliedType.List(_)  => "[]"
-        case AppliedType.Dict(_)  => "Dict.empty"
+        case AppliedType.Maybe(_)          => "Nothing"
+        case AppliedType.List(_)           => "[]"
+        case AppliedType.Dict(_)           => "Dict.empty"
+        case AppliedType.Result(errTpe, _) => s"Err (${initDefinition(errTpe, topLevel = false)})"
       }
     case ReferencedType(name) => s"Data.$name.init"
     case TypeAlias(_, fields) if topLevel =>
@@ -106,6 +98,7 @@ object TypeEmit {
         case BasicType.Float      => s"Encode.float $arg"
         case BasicType.Bool       => s"Encode.bool $arg"
         case BasicType.Uuid       => s"Uuid.encode $arg"
+        case BasicType.Bytes      => s"{- json encoding for Bytes not supported in endpoints-elm! -}"
       }
     case appliedType: AppliedType =>
       appliedType match {
@@ -117,6 +110,8 @@ object TypeEmit {
         case AppliedType.Dict(tpe) =>
           val tpeEncoder = encoderDefinition(tpe, "", topLevel = false)
           s"(Encode.dict identity ($tpeEncoder) $arg)"
+        case AppliedType.Result(_, _) =>
+          "{- json encoding Result type not supported in endpoints-elm! -}"
       }
     case ReferencedType(name) =>
       s"Data.$name.encoder $arg"
@@ -168,6 +163,7 @@ object TypeEmit {
         case BasicType.Float      => "Decode.float"
         case BasicType.Bool       => "Decode.bool"
         case BasicType.Uuid       => "Uuid.decoder"
+        case BasicType.Bytes      => s"{- json decoding for Bytes not supported in endpoints-elm! -}"
       }
     case appliedType: AppliedType =>
       val decoder = appliedType match {
@@ -177,6 +173,8 @@ object TypeEmit {
           s"Decode.list ${decoderDefinition(tpe, topLevel = false)}"
         case AppliedType.Dict(tpe) =>
           s"Decode.dict ${decoderDefinition(tpe, topLevel = false)}"
+        case AppliedType.Result(_, _) =>
+          "{- json decoding Result type not supported in endpoints-elm! -}"
       }
       if (topLevel) decoder else s"($decoder)"
     case ReferencedType(name) =>
@@ -258,8 +256,8 @@ object TypeEmit {
     case TypeAlias(_, fields) =>
       fields.toList.flatMap {
         case (fieldName, fieldTpe) =>
-          val tpeRef = typeReference(elmType)
-          val fieldTypeRef = typeReference(fieldTpe)
+          val tpeRef = ElmType.typeReference(elmType)
+          val fieldTypeRef = ElmType.typeReference(fieldTpe)
           val argName = NameUtils.identFromTypeName(elmType)
           List(
             s"set${NameUtils.camelizeName(fieldName)} : $fieldTypeRef -> $tpeRef -> $tpeRef",
@@ -276,8 +274,8 @@ object TypeEmit {
     case TypeAlias(_, fields) =>
       fields.toList.flatMap {
         case (fieldName, fieldTpe) =>
-          val tpeRef = typeReference(elmType)
-          val fieldTypeRef = typeReference(fieldTpe)
+          val tpeRef = ElmType.typeReference(elmType)
+          val fieldTypeRef = ElmType.typeReference(fieldTpe)
           val argName = NameUtils.identFromTypeName(elmType)
           List(
             s"update${NameUtils.camelizeName(fieldName)} : ($fieldTypeRef -> $fieldTypeRef) -> $tpeRef -> $tpeRef",

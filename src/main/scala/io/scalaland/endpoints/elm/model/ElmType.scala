@@ -23,6 +23,7 @@ object BasicType {
   object Float extends BasicType("Float")
   object Bool extends BasicType("Bool")
   object Uuid extends BasicType("Uuid")
+  object Bytes extends BasicType("Bytes")
 }
 
 sealed abstract class AppliedType(val name: String, val args: Seq[ElmType]) extends ElmType
@@ -31,6 +32,7 @@ object AppliedType {
   case class Maybe(tpe: ElmType) extends AppliedType("Maybe", Seq(tpe))
   case class List(tpe: ElmType) extends AppliedType("List", Seq(tpe))
   case class Dict(tpe: ElmType) extends AppliedType("Dict", Seq(BasicType.String, tpe))
+  case class Result(errTpe: ElmType, okTpe: ElmType) extends AppliedType("Result", Seq(errTpe, okTpe))
 }
 
 case class ReferencedType(name: String) extends ElmType
@@ -79,4 +81,13 @@ object ElmType {
       Seq(ut)
   }
 
+  def typeReference(elmType: ElmType, topLevel: Boolean = true): String = elmType match {
+    case basicType: BasicType => basicType.name
+    case appliedType: AppliedType =>
+      val refStr = s"${appliedType.name} ${appliedType.args.map(typeReference(_, topLevel = false)).mkString(" ")}"
+      if (topLevel) refStr else s"($refStr)"
+    case ReferencedType(name)  => name
+    case TypeAlias(name, _)    => name
+    case UnionType(name, _, _) => name
+  }
 }

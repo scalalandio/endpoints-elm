@@ -9,48 +9,50 @@ module Request.Segments exposing (..)
 
 import Request.Url.Segments
 import Http
-import HttpBuilder exposing (RequestBuilder)
+import HttpBuilder.Task exposing (RequestBuilder)
 import Json.Decode as Decode
 import Json.Encode as Encode
 import Bool.Extra
 import Maybe.Extra
+import Bytes exposing (Bytes)
 import Dict exposing (Dict)
 
 import Date exposing (..)
 import Uuid exposing (..)
+import EndpointsElm
 
 
-stringStringGet : String -> RequestBuilder ()
+stringStringGet : String -> RequestBuilder Http.Error ()
 stringStringGet string =
-  HttpBuilder.get (Request.Url.Segments.stringStringGet string)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Segments.stringStringGet string)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-intIntGet : Int -> RequestBuilder ()
+intIntGet : Int -> RequestBuilder Http.Error ()
 intIntGet int =
-  HttpBuilder.get (Request.Url.Segments.intIntGet int)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Segments.intIntGet int)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-longLongGet : Int -> RequestBuilder ()
+longLongGet : Int -> RequestBuilder Http.Error ()
 longLongGet long =
-  HttpBuilder.get (Request.Url.Segments.longLongGet long)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Segments.longLongGet long)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-uuidUuidGet : Uuid -> RequestBuilder ()
+uuidUuidGet : Uuid -> RequestBuilder Http.Error ()
 uuidUuidGet uuid =
-  HttpBuilder.get (Request.Url.Segments.uuidUuidGet uuid)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Segments.uuidUuidGet uuid)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
 
-dateDateGet : Date -> RequestBuilder ()
+dateDateGet : Date -> RequestBuilder Http.Error ()
 dateDateGet date =
-  HttpBuilder.get (Request.Url.Segments.dateDateGet date)
-    |> HttpBuilder.withExpect (Http.expectStringResponse (\_ -> Ok ()))
-    |> HttpBuilder.withTimeout 30000
+  HttpBuilder.Task.get (Request.Url.Segments.dateDateGet date)
+    |> HttpBuilder.Task.withResolver (Http.stringResolver (EndpointsElm.httpResolveUnit))
+    |> HttpBuilder.Task.withTimeout 30000
 
