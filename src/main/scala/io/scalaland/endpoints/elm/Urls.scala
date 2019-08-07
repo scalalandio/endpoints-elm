@@ -1,15 +1,19 @@
 package io.scalaland.endpoints.elm
 
 import endpoints.algebra.Documentation
-import endpoints.{InvariantFunctor, PartialInvariantFunctor, Tupler, algebra}
+import endpoints.{PartialInvariantFunctor, Tupler, algebra}
 import io.scalaland.endpoints.elm.model._
 
 import scala.collection.compat.Factory
-import language.higherKinds
+import scala.language.higherKinds
 
 trait Urls extends algebra.Urls {
 
   type QueryString[A] = List[(String, ElmType)]
+
+  implicit def queryStringPartialInvFunctor: PartialInvariantFunctor[QueryString] = new PartialInvariantFunctor[QueryString] {
+    def xmapPartial[A, B](fa: List[(String, ElmType)], f: A => Option[B], g: B => A): List[(String, ElmType)] = fa
+  }
 
   def combineQueryStrings[A, B](first: QueryString[A],
                                 second: QueryString[B])(implicit tupler: Tupler[A, B]): QueryString[tupler.Out] =
@@ -27,6 +31,10 @@ trait Urls extends algebra.Urls {
 
   type QueryStringParam[A] = ElmType
 
+  implicit def queryStringParamPartialInvFunctor: PartialInvariantFunctor[QueryStringParam] = new PartialInvariantFunctor[QueryStringParam] {
+    def xmapPartial[A, B](fa: ElmType, f: A => Option[B], g: B => A): ElmType = fa
+  }
+
   override implicit def uuidQueryString: QueryStringParam[String] = BasicType.Uuid
 
   implicit def stringQueryString: QueryStringParam[String] = BasicType.String
@@ -41,6 +49,10 @@ trait Urls extends algebra.Urls {
 
   type Segment[A] = ElmType
 
+  implicit def segmentPartialInvFunctor: PartialInvariantFunctor[Segment] = new PartialInvariantFunctor[Segment] {
+    def xmapPartial[A, B](fa: ElmType, f: A => Option[B], g: B => A): ElmType = fa
+  }
+
   override implicit def uuidSegment: Segment[String] = BasicType.Uuid
 
   implicit def stringSegment: Segment[String] = BasicType.String
@@ -50,7 +62,10 @@ trait Urls extends algebra.Urls {
   override implicit def longSegment: Segment[Long] = BasicType.Int
 
   type Path[A] = ElmUrl
-  type Url[A] = ElmUrl
+
+  implicit def pathPartialInvariantFunctor: PartialInvariantFunctor[Path] = new PartialInvariantFunctor[Path] {
+    def xmapPartial[A, B](fa: ElmUrl, f: A => Option[B], g: B => A): ElmUrl = fa
+  }
 
   def staticPathSegment(segment: String): Path[Unit] =
     ElmUrl(List(StaticSegment(segment)), Nil)
@@ -58,25 +73,18 @@ trait Urls extends algebra.Urls {
   def segment[A](name: String = "", docs: Documentation = None)(implicit s: Segment[A]): Path[A] =
     ElmUrl(List(VariableSegment(name, s)), Nil)
 
+  type Url[A] = ElmUrl
+
+  implicit def urlPartialInvFunctor: PartialInvariantFunctor[Url] = new PartialInvariantFunctor[Url] {
+    def xmapPartial[A, B](fa: ElmUrl, f: A => Option[B], g: B => A): ElmUrl = fa
+  }
+
+  def remainingSegments(name: String, docs: Documentation): ElmUrl =
+    ElmUrl(segments = List(VariableSegment(name, BasicType.String)), queryParams = Nil)
+
   def chainPaths[A, B](first: Path[A], second: Path[B])(implicit tupler: Tupler[A, B]): Path[tupler.Out] =
     ElmUrl(segments = first.segments ++ second.segments, queryParams = first.queryParams ++ second.queryParams)
 
-  implicit def urlInvFunctor: InvariantFunctor[Url] = new InvariantFunctor[Url] {
-    def xmap[From, To](f: Url[From], map: From => To, contramap: To => From): Url[To] = f
-  }
-
   def urlWithQueryString[A, B](path: Path[A], qs: QueryString[B])(implicit tupler: Tupler[A, B]): Url[tupler.Out] =
     path.copy(queryParams = qs)
-
-  implicit def queryStringPartialInvFunctor: PartialInvariantFunctor[QueryString] = null
-
-  implicit def queryStringParamPartialInvFunctor: PartialInvariantFunctor[QueryStringParam] = null
-
-  implicit def segmentPartialInvFunctor: PartialInvariantFunctor[Segment] = null
-
-  implicit def pathPartialInvariantFunctor: PartialInvariantFunctor[Path] = null
-
-  def remainingSegments(name: String, docs: Documentation): ElmUrl = null
-
-  implicit def urlPartialInvFunctor: PartialInvariantFunctor[Url] = null
 }
