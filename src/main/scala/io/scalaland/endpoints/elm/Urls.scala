@@ -11,9 +11,10 @@ trait Urls extends algebra.Urls {
 
   type QueryString[A] = List[(String, ElmType)]
 
-  implicit def queryStringPartialInvFunctor: PartialInvariantFunctor[QueryString] = new PartialInvariantFunctor[QueryString] {
-    def xmapPartial[A, B](fa: List[(String, ElmType)], f: A => Option[B], g: B => A): List[(String, ElmType)] = fa
-  }
+  implicit def queryStringPartialInvFunctor: PartialInvariantFunctor[QueryString] =
+    new PartialInvariantFunctor[QueryString] {
+      def xmapPartial[A, B](fa: List[(String, ElmType)], f: A => Option[B], g: B => A): List[(String, ElmType)] = fa
+    }
 
   def combineQueryStrings[A, B](first: QueryString[A],
                                 second: QueryString[B])(implicit tupler: Tupler[A, B]): QueryString[tupler.Out] =
@@ -31,9 +32,10 @@ trait Urls extends algebra.Urls {
 
   type QueryStringParam[A] = ElmType
 
-  implicit def queryStringParamPartialInvFunctor: PartialInvariantFunctor[QueryStringParam] = new PartialInvariantFunctor[QueryStringParam] {
-    def xmapPartial[A, B](fa: ElmType, f: A => Option[B], g: B => A): ElmType = fa
-  }
+  implicit def queryStringParamPartialInvFunctor: PartialInvariantFunctor[QueryStringParam] =
+    new PartialInvariantFunctor[QueryStringParam] {
+      def xmapPartial[A, B](fa: ElmType, f: A => Option[B], g: B => A): ElmType = fa
+    }
 
   override implicit def uuidQueryString: QueryStringParam[String] = BasicType.Uuid
 
