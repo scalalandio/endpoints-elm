@@ -24,7 +24,7 @@ trait CodegenTest extends TestSuite {
         val rightLines = right.split('\n')
         leftLines.zip(rightLines).zipWithIndex.collect {
           case ((l, r), i) if l != r =>
-            s"$i: $l != $r"
+            s"$i: '$l' != '$r'"
         } ++ {
           val (isLeft, bigger) =
             if (leftLines.length >= rightLines.length) true -> leftLines
