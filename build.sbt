@@ -1,6 +1,6 @@
 name := "endpoints-elm"
 
-version := "0.9.2"
+version := "0.10.0"
 
 organization := "io.scalaland"
 
@@ -13,15 +13,15 @@ buildInfoKeys := Seq[BuildInfoKey](version)
 buildInfoPackage := "io.scalaland.endpoints.elm"
 
 val versions = new {
-  val endpoints = "0.9.0"
-  val utest = "0.6.7"
+  val endpoints = "0.10.0"
+  val utest = "0.7.1"
 }
 
 libraryDependencies ++= Seq(
   "org.julienrf" %% "endpoints-algebra" % versions.endpoints % "provided",
   "org.julienrf" %% "endpoints-algebra-json-schema" % versions.endpoints % "provided",
   "com.lihaoyi" %% "utest" % versions.utest % "test",
-  "io.scalaland" %% "endpoints-json-schema-macros" % "0.9.0" % "test"
+  "io.scalaland" %% "endpoints-json-schema-macros" % "0.10.0" % "test"
 )
 
 testFrameworks += new TestFramework("utest.runner.Framework")

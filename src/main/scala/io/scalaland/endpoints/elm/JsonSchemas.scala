@@ -66,6 +66,8 @@ trait JsonSchemas extends algebra.JsonSchemas {
 
   implicit def booleanJsonSchema: ElmType = BasicType.Bool
 
+  implicit def byteJsonSchema: ElmType = BasicType.Int
+
   implicit def arrayJsonSchema[C[X] <: scala.Seq[X], A](implicit jsonSchema: JsonSchema[A],
                                                         factory: Factory[A, C[A]]): JsonSchema[C[A]] =
     AppliedType.List(jsonSchema)

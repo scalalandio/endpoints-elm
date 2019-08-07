@@ -1,10 +1,10 @@
 package io.scalaland.endpoints.elm
 
 import endpoints.algebra.Documentation
-import endpoints.{InvariantFunctor, Tupler, algebra}
+import endpoints.{InvariantFunctor, PartialInvariantFunctor, Tupler, algebra}
 import io.scalaland.endpoints.elm.model._
-import scala.collection.compat.Factory
 
+import scala.collection.compat.Factory
 import language.higherKinds
 
 trait Urls extends algebra.Urls {
@@ -24,12 +24,6 @@ trait Urls extends algebra.Urls {
   implicit def repeatedQueryStringParam[A, CC[X] <: Iterable[X]](implicit tpe: QueryStringParam[A],
                                                                  factory: Factory[A, CC[A]]): QueryStringParam[CC[A]] =
     AppliedType.List(tpe)
-
-  def refineQueryStringParam[A, B](pa: QueryStringParam[A])(f: A => Option[B])(g: B => A): QueryStringParam[B] =
-    pa
-
-  def refineSegment[A, B](sa: Segment[A])(f: A => Option[B])(g: B => A): Segment[B] =
-    sa
 
   type QueryStringParam[A] = ElmType
 
@@ -51,9 +45,9 @@ trait Urls extends algebra.Urls {
 
   implicit def stringSegment: Segment[String] = BasicType.String
 
-  implicit def intSegment: Segment[Int] = BasicType.Int
+  override implicit def intSegment: Segment[Int] = BasicType.Int
 
-  implicit def longSegment: Segment[Long] = BasicType.Int
+  override implicit def longSegment: Segment[Long] = BasicType.Int
 
   type Path[A] = ElmUrl
   type Url[A] = ElmUrl
@@ -74,4 +68,15 @@ trait Urls extends algebra.Urls {
   def urlWithQueryString[A, B](path: Path[A], qs: QueryString[B])(implicit tupler: Tupler[A, B]): Url[tupler.Out] =
     path.copy(queryParams = qs)
 
+  implicit def queryStringPartialInvFunctor: PartialInvariantFunctor[QueryString] = null
+
+  implicit def queryStringParamPartialInvFunctor: PartialInvariantFunctor[QueryStringParam] = null
+
+  implicit def segmentPartialInvFunctor: PartialInvariantFunctor[Segment] = null
+
+  implicit def pathPartialInvariantFunctor: PartialInvariantFunctor[Path] = null
+
+  def remainingSegments(name: String, docs: Documentation): ElmUrl = null
+
+  implicit def urlPartialInvFunctor: PartialInvariantFunctor[Url] = null
 }
