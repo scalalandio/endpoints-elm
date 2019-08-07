@@ -1,6 +1,8 @@
 package io.scalaland.endpoints.elm
 
-object CodeEmitTest extends App with ElmCodeGenerator {
+import io.scalaland.endpoints.elm.commons.UnitStatusCodes
+
+object CodeEmitTest extends App with ElmCodeGenerator with UnitStatusCodes {
 
   args match {
     case Array(outputDir) =>

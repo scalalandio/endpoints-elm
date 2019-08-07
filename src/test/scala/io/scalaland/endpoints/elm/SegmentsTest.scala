@@ -4,6 +4,7 @@ import java.time.LocalDate
 import java.util.UUID
 
 import io.scalaland.endpoints.elm.model.{ElmEndpoint, ElmType}
+import io.scalaland.endpoints.elm.commons.{CodegenTest, CustomTypes, ReferenceData, UnitStatusCodes}
 import utest._
 
 object SegmentsTest extends CodegenTest {
@@ -30,7 +31,7 @@ object SegmentsTest extends CodegenTest {
       endpoint(get(path / "date" / segment[LocalDate]("date")), emptyResponse(), tags = List("Segments"))
   }
 
-  object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator {
+  object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator with UnitStatusCodes {
 
     implicit def dateSegment: ElmType = CustomTypes.date
 

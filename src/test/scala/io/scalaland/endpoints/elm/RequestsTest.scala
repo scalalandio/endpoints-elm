@@ -5,6 +5,7 @@ import java.util.UUID
 
 import io.scalaland.endpoints.elm.fixtures._
 import io.scalaland.endpoints.elm.model.{ElmEndpoint, ElmType}
+import io.scalaland.endpoints.elm.commons.{CodegenTest, CustomTypes, ReferenceData, UnitStatusCodes}
 import utest._
 
 object RequestsTest extends CodegenTest {
@@ -53,7 +54,7 @@ object RequestsTest extends CodegenTest {
       endpoint(post(path / "json-map", jsonRequest[Map[String, Foo]]()), emptyResponse(), tags = List("Requests"))
   }
 
-  object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator {
+  object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator with UnitStatusCodes {
 
     implicit def dateSchema: ElmType = CustomTypes.date
 

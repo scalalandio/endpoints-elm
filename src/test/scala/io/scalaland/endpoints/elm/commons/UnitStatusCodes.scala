@@ -1,8 +1,8 @@
-package io.scalaland.endpoints.elm
+package io.scalaland.endpoints.elm.commons
 
 import endpoints.algebra
 
-trait StatusCodes extends algebra.StatusCodes {
+trait UnitStatusCodes extends algebra.StatusCodes {
 
   type StatusCode = Unit
 

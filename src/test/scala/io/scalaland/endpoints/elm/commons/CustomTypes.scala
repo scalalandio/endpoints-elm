@@ -1,4 +1,4 @@
-package io.scalaland.endpoints.elm
+package io.scalaland.endpoints.elm.commons
 
 import io.scalaland.endpoints.elm.model.CustomBasicType
 

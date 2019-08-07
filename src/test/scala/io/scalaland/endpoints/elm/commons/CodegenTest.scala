@@ -1,4 +1,4 @@
-package io.scalaland.endpoints.elm
+package io.scalaland.endpoints.elm.commons
 
 import java.io.File
 

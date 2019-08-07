@@ -1,6 +1,7 @@
 package io.scalaland.endpoints.elm
 
 import io.scalaland.endpoints.elm.model.ElmEndpoint
+import io.scalaland.endpoints.elm.commons.{CodegenTest, ReferenceData, UnitStatusCodes}
 import utest._
 
 object CounterTest extends CodegenTest {
@@ -36,7 +37,7 @@ object CounterTest extends CodegenTest {
       )
   }
 
-  object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator {
+  object TestElmEndpoints extends TestEndpoints with ElmCodeGenerator with UnitStatusCodes {
 
     val allEndpoints: Seq[ElmEndpoint] =
       Seq(currentValue, increment)
