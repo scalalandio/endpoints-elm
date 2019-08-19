@@ -4,7 +4,7 @@
 [![Maven Central](https://img.shields.io/maven-central/v/io.scalaland/endpoints-elm_2.12.svg)](http://search.maven.org/#search%7Cga%7C1%7Cendpoints-elm)
 [![License](http://img.shields.io/:license-Apache%202-green.svg)](http://www.apache.org/licenses/LICENSE-2.0.txt)
 
-Elm code generator based on Scala endpoints library (https://github.com/julienrf/endpoints).
+Elm code generator based on Scala [endpoints library](https://github.com/julienrf/endpoints).
 
 #### New to endpoints?
 
